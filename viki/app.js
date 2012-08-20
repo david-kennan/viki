@@ -7,13 +7,16 @@ var express = require('express')
   , routes = require('./routes')
   , http = require('http')
   , path = require('path')
-  , mongoose = require('mongoose');
+  , mongoose = require('mongoose')
+  , imageModel = require('./models/image.js');
 
 // Initializations
 
 var app = express();
 
 var db = mongoose.createConnection('localhost', 'viki_dev');
+db.on('error', console.error.bind(console, 'connection error:'));
+db.on('open', console.info.bind(console, 'connection error:'));
 
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
