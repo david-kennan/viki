@@ -11,13 +11,8 @@ var express = require('express')
 
 // Initializations
 var app = express();
-/*var db = mongoose.createConnection('localhost', 'viki_dev');
-db.on('error', console.error.bind(console, 'connection error:'));
-db.on('open', console.info.bind(console, 'mongoose connected successfully'));
-var Image = require('./models/image.js').Image(db);*/
 
 mongoose.connect('mongodb://localhost:27017/viki_dev');
-//mongoose.model('Image', require('./models/image.js').Image);
 
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
@@ -38,6 +33,9 @@ app.configure('development', function(){
 });
 
 app.get('/', routes.index);
+app.get('/upload', routes.upload);
+app.get('/viewimages', routes.viewimages);
+app.post('/upload', routes.uploadImage);
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));

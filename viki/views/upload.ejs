@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= title %></title>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body>
+    <form name="uploadform" action="/upload" method="post" enctype="multipart/form-data">
+        Image Name: <input type="text" name="imagename" />
+        Image File: <input type="file" name="filedata" id="file" />
+        <input type="Submit" value="Submit">
+    </form>
+      
+  </body>
+</html>
