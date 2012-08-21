@@ -29,13 +29,12 @@ exports.uploadImage = function(req, res) {
 
 exports.viewimages = function (req, res) {
     Image.find(function (err, images) {
-      console.log(images[0]);
       res.render('view_images', {title: 'All Images', images: images});
     });
 };
 
 exports.getImage = function (req, res) {
-    var Server = mongo.Server,
+    /*var Server = mongo.Server,
     Db = mongo.Db,
     ObjectID = mongo.ObjectID;
     
@@ -43,12 +42,19 @@ exports.getImage = function (req, res) {
     var db = new Db('viki_dev', server);
     
     db.open(function(err, db) {
-            console.log(mongoose.connection.db);
-        var grid = new Grid(mongoose.connection.db);
+        var grid = new Grid(db);
         grid.get(ObjectID.createFromHexString(req.params.imageID), function(err, data) {
             res.writeHead(200, {'content-type':'image/jpeg'});
             res.end(data, 'binary');
             db.close();
         });
+    });*/
+    
+    var ObjectID = mongo.ObjectID;
+    
+    var grid = new Grid(mongoose.connection.db);
+    grid.get(ObjectID.createFromHexString(req.params.imageID), function(err, data) {
+        res.writeHead(200, {'content-type':'image/jpeg'});
+        res.end(data, 'binary');
     });
 };
