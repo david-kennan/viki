@@ -19,7 +19,7 @@ exports.upload = function(req, res) {
 exports.uploadImage = function(req, res) {
     var grid = new Grid(mongoose.connection.db);
     Fs.readFile(req.files.filedata.path, function(err, data) {
-        grid.put(data, {metadata:{category:'image'}, content_type: 'image/jpeg'}, function(err, fileInfo) {
+        grid.put(data, {metadata:{category:'image'}, content_type: 'image/jpeg', name:'imagefile'}, function(err, fileInfo) {
             var newImg = new Image({name:req.body.imagename, dataid:fileInfo._id, dateCreated: new Date()});
             newImg.save();
             res.redirect('/');
