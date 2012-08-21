@@ -1,0 +1,14 @@
+!!! 5
+html
+  head
+    title= title
+    link(rel="stylesheet", href="/stylesheets/style.css")
+  body
+    form(name="uploadform", action="/image/upload", method="post", enctype="multipart/form-data")
+      label(for="imagename") Image Name:&nbsp;
+      input(type="text", name="imagename")
+      p
+      label(for="filedata")Image File:&nbsp;
+      input(type="file", name="filedata", id="file")
+      p
+      input(type="Submit", value="Upload File")
