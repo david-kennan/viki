@@ -10,6 +10,6 @@ html
         |  one?
     else
     each image in images
-      p Image Name:
+      p Image Name:&nbsp;
         = image.name
       image(src="/image/get/#{image.dataid}")
