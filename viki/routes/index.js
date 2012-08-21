@@ -9,7 +9,7 @@ var Grid = mongo.Grid;
  */
 
 exports.index = function(req, res){
-  res.render('index', { title: 'Express' });
+  res.render('index', { title: 'Viki: Visual Wiki' });
 };
 
 exports.upload = function(req, res) {
@@ -28,10 +28,8 @@ exports.uploadImage = function(req, res) {
 }
 
 exports.viewimages = function (req, res) {
-    var allImages;
     Image.find(function (err, images) {
-        allImages = images;
-        res.render('view_images', {title: 'All Images', image: allImages[0].dataid});
+      res.render('view_images', {title: 'All Images', images: images});
     });
 };
 
