@@ -9,6 +9,7 @@
       <p>No images uploaded, would you like to <a href="/image/upload">upload</a> one?
     <% } else { %>
       <% for (var i=0; i<images.length; i++) { %>
+        <p>Image Name: <%= images[i].name %><p>
         <image src="/image/get/<%= images[i].dataid %>"/>
       <% } %>
     <% } %>
