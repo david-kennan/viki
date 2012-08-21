@@ -1,15 +1,11 @@
-!!! 5
-html
-  head
-    title= title
-    link rel='stylesheet' href='/stylesheets/style.css'
-  body
-    if images.length == 0
-      p No images uploaded, would you like to 
-        a(href="/image/upload") upload
-        |  one?
-    else
+extends layout
+block content    
+  if images.length == 0
+    p No images uploaded, would you like to 
+    a(href="/image/upload") upload
+    |  one?
+  else
     each image in images
       p Image Name:&nbsp;
-        = image.name
+      = image.name
       image(src="/image/get/#{image.dataid}")

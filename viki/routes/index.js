@@ -9,7 +9,7 @@ var Grid = mongo.Grid;
  */
 
 exports.index = function(req, res){
-  res.render('index', { title: 'Viki: Visual Wiki' });
+  res.render('index', { title: 'Welcome' });
 };
 
 exports.upload = function(req, res) {
