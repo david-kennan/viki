@@ -1,3 +1,7 @@
+// config mongo server
+var mongo_server = 'localhost';
+var mongo_port = '27017';
+var mongo_db = 'viki_dev';
 
 /**
  * Module dependencies.
@@ -9,10 +13,9 @@ var express = require('express')
   , path = require('path')
   , mongoose = require('mongoose');
 
-// Initializations
+// initialize express, mongoose
 var app = express();
-
-mongoose.connect('mongodb://localhost:27017/viki_dev');
+mongoose.connect('mongodb://'+mongo_server+':'+mongo_port+'/'+mongo_db);
 
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
