@@ -6,6 +6,5 @@ block content
     |  one?
   else
     each image in images
-      p Image Name:&nbsp;
-      = image.name
+      p Image Name:&nbsp; #{image.name}
       image(src="/image/get/#{image.dataid}")
