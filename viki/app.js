@@ -35,6 +35,7 @@ app.configure('development', function(){
 app.get('/', routes.index);
 app.get('/upload', routes.upload);
 app.get('/viewimages', routes.viewimages);
+app.get('/image/get/:imageID', routes.getImage);
 app.post('/upload', routes.uploadImage);
 
 http.createServer(app).listen(app.get('port'), function(){
