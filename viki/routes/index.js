@@ -29,6 +29,7 @@ exports.uploadImage = function(req, res) {
 
 exports.viewimages = function (req, res) {
     Image.find(function (err, images) {
+      console.log(images[0]);
       res.render('view_images', {title: 'All Images', images: images});
     });
 };

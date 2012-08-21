@@ -8,8 +8,8 @@
     <% if (images.length == 0) { %>
       <p>No images uploaded, would you like to <a href="/image/upload">upload</a> one?
     <% } else { %>
-      <% for (image in images) { %>
-        <image src="/image/get/<%= image.dataid %>"/>
+      <% for (var i=0; i<images.length; i++) { %>
+        <image src="/image/get/<%= images[i].dataid %>"/>
       <% } %>
     <% } %>
   </body>
