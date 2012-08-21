@@ -42,7 +42,8 @@ exports.getImage = function (req, res) {
     var db = new Db('viki_dev', server);
     
     db.open(function(err, db) {
-        var grid = new Grid(db, 'fs');
+            console.log(mongoose.connection.db);
+        var grid = new Grid(mongoose.connection.db);
         grid.get(ObjectID.createFromHexString(req.params.imageID), function(err, data) {
             res.writeHead(200, {'content-type':'image/jpeg'});
             res.end(data, 'binary');
