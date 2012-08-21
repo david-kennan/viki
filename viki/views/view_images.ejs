@@ -5,6 +5,12 @@
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body>
-    <image src="/image/get/<%= image %>"/>
+    <% if (images.length == 0) { %>
+      <p>No images uploaded, would you like to <a href="/image/upload">upload</a> one?
+    <% } else { %>
+      <% for (image in images) { %>
+        <image src="/image/get/<%= image.dataid %>"/>
+      <% } %>
+    <% } %>
   </body>
 </html>
