@@ -6,6 +6,6 @@ block content
       |  one?
   else
     each image in images
-      p Image Name:&nbsp; #{image.name}
+      //p Image Name:&nbsp; #{image.name}
       a(href="/image/get/#{image.dataid}")
-        image(src="/image/get/#{image.thumbnailid}")
+        image(src="/image/get/#{image.thumbnailid}", title="#{image.name}")
