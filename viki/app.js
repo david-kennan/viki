@@ -20,6 +20,8 @@ var express = require('express')
 var app = express();
 mongoose.connect('mongodb://'+mongo_server+':'+mongo_port+'/'+mongo_db);
 
+debugger;
+
 app.configure(function(){
   app.set('port', process.env.PORT || 3000);
   app.set('views', __dirname + '/views');

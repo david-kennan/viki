@@ -3,6 +3,7 @@ var mongoose = require('mongoose');
 var Image = mongoose.model('Image', require('../models/image.js'));
 var Fs = require('fs');
 var Grid = mongo.Grid;
+var thumbnailSize = 100;
 
 /*
  * GET home page.
@@ -17,14 +18,61 @@ exports.upload = function(req, res) {
 };
 
 exports.uploadImage = function(req, res) {
-    var grid = new Grid(mongoose.connection.db);
+    /*var grid = new Grid(mongoose.connection.db);
     Fs.readFile(req.files.filedata.path, function(err, data) {
         grid.put(data, {metadata:{category:'image'}, content_type: 'image/jpeg', name:'imagefile'}, function(err, fileInfo) {
             var newImg = new Image({name:req.body.imagename, dataid:fileInfo._id, dateCreated: new Date()});
             newImg.save();
             res.redirect('/');
         });
+    });*/
+    
+    // Image processing
+    var gm = require('gm');
+    var original = gm(req.files.filedata.path);
+    original.interlace('Line');
+    original.stream(function(err, stdout, stderr) {
+        var dataArray = [];
+        stdout.on('data', function (data) {
+            dataArray.push(data);
+        });
+        stdout.on('close', function() {
+            require('bufferjs');
+            var fullImage = Buffer.concat(dataArray);
+            var grid = new Grid(mongoose.connection.db);
+            grid.put(fullImage, {metadata:{category:'image'}, content_type: 'image/jpeg'}, function(err, origInfo) {
+                original.size(function(err, value) {
+                    var landscape = value.width > value.height;
+                    var minDimension = landscape ? value.height : value.width;
+                    var resizeFactor = minDimension/thumbnailSize;
+                    original.resize(value.width/resizeFactor, value.height/resizeFactor);
+                    var cropX = landscape ? (value.width/resizeFactor - thumbnailSize) / 2 : 0;
+                    var cropY = landscape ? 0 : (value.height/resizeFactor - thumbnailSize) / 2;
+                    original.crop(thumbnailSize, thumbnailSize, cropX, cropY);
+                    original.stream(function(err, stdout, stderr) {
+                        var thumbArray = [];
+                        stdout.on('data', function(data) {
+                            thumbArray.push(data);
+                        });
+                        stdout.on('close', function() {
+                            var thumbImage = Buffer.concat(thumbArray);
+                            grid.put(thumbImage, {metadata:{category:'image'}, content_type: 'image/jpeg'}, function(err, thumbInfo) {
+                                var newImg = new Image({name:req.body.imagename, dataid:origInfo._id, thumbnailid: thumbInfo._id, dateCreated: new Date()});
+                                newImg.save();
+                                res.redirect('/');
+                            });
+                        });
+                    });
+                });
+            });
+        });
     });
+    /*
+     
+     var ws = Fs.createWriteStream('/Users/samuelgreene/Desktop/original.jpg');
+     ws.write(fullImage.toString('base64'), 'base64');
+     ws.end();
+     */
 }
 
 exports.viewimages = function (req, res) {
