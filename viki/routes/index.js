@@ -17,14 +17,20 @@ exports.upload = function(req, res) {
 };
 
 exports.uploadImage = function(req, res) {
+  if (req.files.filedata.length != 0) {
     var grid = new Grid(mongoose.connection.db);
     Fs.readFile(req.files.filedata.path, function(err, data) {
-        grid.put(data, {metadata:{category:'image'}, content_type: 'image/jpeg', name:'imagefile'}, function(err, fileInfo) {
-            var newImg = new Image({name:req.body.imagename, dataid:fileInfo._id, dateCreated: new Date()});
-            newImg.save();
-            res.redirect('/');
-        });
+      grid.put(data, {metadata:{category:'image'}, content_type: 'image/jpeg', name:'imagefile'}, function(err, fileInfo) {
+        var newImg = new Image({name:req.body.imagename, dataid:fileInfo._id, dateCreated: new Date()});
+        newImg.save();
+        res.redirect('/');
+      });
     });
+  }
+  else {
+    res.writeHead(200);
+    res.end("No file supplied for upload");
+  }
 }
 
 exports.viewimages = function (req, res) {
