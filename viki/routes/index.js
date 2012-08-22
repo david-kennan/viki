@@ -18,14 +18,7 @@ exports.upload = function(req, res) {
 };
 
 exports.uploadImage = function(req, res) {
-    /*var grid = new Grid(mongoose.connection.db);
-    Fs.readFile(req.files.filedata.path, function(err, data) {
-        grid.put(data, {metadata:{category:'image'}, content_type: 'image/jpeg', name:'imagefile'}, function(err, fileInfo) {
-            var newImg = new Image({name:req.body.imagename, dataid:fileInfo._id, dateCreated: new Date()});
-            newImg.save();
-            res.redirect('/');
-        });
-    });*/
+  if (req.files.filedata.length != 0) {
     
     // Image processing
     var gm = require('gm');
@@ -67,12 +60,11 @@ exports.uploadImage = function(req, res) {
             });
         });
     });
-    /*
-     
-     var ws = Fs.createWriteStream('/Users/samuelgreene/Desktop/original.jpg');
-     ws.write(fullImage.toString('base64'), 'base64');
-     ws.end();
-     */
+  }
+  else {
+    res.writeHead(200);
+    res.end("No file supplied for upload");
+  }
 }
 
 exports.viewimages = function (req, res) {
@@ -86,7 +78,9 @@ exports.getImage = function (req, res) {
     
     var grid = new Grid(mongoose.connection.db);
     grid.get(ObjectID.createFromHexString(req.params.imageID), function(err, data) {
-             console.log(err);
+        if (err) {
+          console.log(err);
+        }
         res.writeHead(200, {'content-type':'image/jpeg'});
         res.end(data, 'binary');
     });
