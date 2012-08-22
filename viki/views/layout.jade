@@ -8,6 +8,7 @@ html(lang="en")
     script(type="text/javascript", src="/scripts/dojo/dojo.js", data-dojo-config="async: true")
     script(type="text/javascript", src="/scripts/app.js")
   body
-    h1 Visual Wiki | #{title}
-    block content
-    p viki is by ..., copyright 2012.
+    h2 Visual Wiki | #{title}
+    div#main(data-dojo-type="dojox.mobile.View", data-dojo-props="selected: true")
+      block content
+      p viki is by increpreneur, copyright 2012.

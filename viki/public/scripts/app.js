@@ -10,8 +10,10 @@ debug.log = function(message) {
 }
 // end debugger
 
-require(["dojox/mobile/parser", "dojox/mobile/deviceTheme", "dojox/mobile",], function(parser) {
-  parser.parse();
-  debug.log("loaded dojox/mobile");
+require(["dojox/mobile/parser", "dojox/mobile/deviceTheme",
+         "dojox/mobile/compat", "dojox/mobile"], 
+  function(parser, deviceTheme) {
+    parser.parse();
+    debug.log("loaded dojo etal...");
 });
 
