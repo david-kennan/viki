@@ -2,8 +2,11 @@ doctype 5
 html(lang="en")
   head
     title= title
+    meta(name="viewport", content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no")
+    meta(name="apple-mobile-web-app-capable", content="yes")
     link(rel="stylesheet", href="/stylesheets/style.css")
-    script(type="text/javascript", src="/scripts/dojo.js", data-dojo-config="async: true")
+    script(type="text/javascript", src="/scripts/dojo/dojo.js", data-dojo-config="async: true")
+    script(type="text/javascript", src="/scripts/app.js")
   body
     h1 Visual Wiki | #{title}
     block content
