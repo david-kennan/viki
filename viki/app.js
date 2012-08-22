@@ -6,10 +6,7 @@ var mongo_server = 'localhost';
 var mongo_port = '27017';
 var mongo_db = 'viki_dev';
 
-/**
- * Module dependencies.
- */
-
+// dependencies
 var express = require('express')
   , routes = require('./routes')
   , http = require('http')
@@ -34,8 +31,15 @@ app.configure(function(){
   app.use(express.static(path.join(__dirname, 'public')));
 });
 
+// special config for development
 app.configure('development', function(){
+  console.log("Running in development mode...");
   app.use(express.errorHandler());
+  app.locals.pretty = true;
+});
+
+app.configure('production', function(){
+  console.log("Running in production mode...");
 });
 
 // route

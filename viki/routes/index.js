@@ -38,7 +38,9 @@ exports.getImage = function (req, res) {
     
     var grid = new Grid(mongoose.connection.db);
     grid.get(ObjectID.createFromHexString(req.params.imageID), function(err, data) {
-             console.log(err);
+        if (err) {
+          console.log(err);
+        }
         res.writeHead(200, {'content-type':'image/jpeg'});
         res.end(data, 'binary');
     });
