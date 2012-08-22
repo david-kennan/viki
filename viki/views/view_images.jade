@@ -7,4 +7,5 @@ block content
   else
     each image in images
       p Image Name:&nbsp; #{image.name}
-      image(src="/image/get/#{image.dataid}")
+      a(href="/image/get/#{image.dataid}")
+        image(src="/image/get/#{image.thumbnailid}")
