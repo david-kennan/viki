@@ -34,26 +34,11 @@ exports.viewimages = function (req, res) {
 };
 
 exports.getImage = function (req, res) {
-    /*var Server = mongo.Server,
-    Db = mongo.Db,
-    ObjectID = mongo.ObjectID;
-    
-    var server = new Server('localhost', 27017, {auto_reconnect: true});
-    var db = new Db('viki_dev', server);
-    
-    db.open(function(err, db) {
-        var grid = new Grid(db);
-        grid.get(ObjectID.createFromHexString(req.params.imageID), function(err, data) {
-            res.writeHead(200, {'content-type':'image/jpeg'});
-            res.end(data, 'binary');
-            db.close();
-        });
-    });*/
-    
     var ObjectID = mongo.ObjectID;
     
     var grid = new Grid(mongoose.connection.db);
     grid.get(ObjectID.createFromHexString(req.params.imageID), function(err, data) {
+             console.log(err);
         res.writeHead(200, {'content-type':'image/jpeg'});
         res.end(data, 'binary');
     });
