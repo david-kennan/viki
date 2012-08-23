@@ -2,13 +2,25 @@ doctype 5
 html(lang="en")
   head
     title= title
+    if dev == true
+      // prevent caching during development
+      meta(http-equiv="cache-control", content="no-cache")
+      meta(http-equiv="pragma", content="no-cache")
     meta(name="viewport", content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no")
     meta(name="apple-mobile-web-app-capable", content="yes")
     link(rel="stylesheet", href="/stylesheets/style.css")
     script(type="text/javascript", src="/scripts/dojo/dojo.js", data-dojo-config="async: true")
     script(type="text/javascript", src="/scripts/app.js")
   body
-    h2 Visual Wiki | #{title}
-    div#main(data-dojo-type="dojox.mobile.View", data-dojo-props="selected: true")
-      block content
-      p viki is by increpreneur, copyright 2012.
+    div#titleheader(data-dojo-type="dojox.mobile.Heading", data-dojo-props="fixed: 'top'") Visual Wiki | #{title}
+    
+    block content
+    
+    ul(data-dojo-type="dojox.mobile.TabBar", data-dojo-props="iconBase: 'images/iconStrip.png', fixed: 'bottom'")
+      li(data-dojo-type="dojox.mobile.TabBarButton", 
+         data-dojo-props="iconPos1: '0,0,29,30', iconPos2: '29,0,29,30', selected: true, moveTo: 'welcome'") Home
+      li(data-dojo-type="dojox.mobile.TabBarButton", 
+         data-dojo-props="iconPos1: '0,29,29,30', iconPos2: '29,29,29,30', moveTo: 'upload'") Upload
+      li(data-dojo-type="dojox.mobile.TabBarButton", 
+         data-dojo-props="iconPos1: '0,58,29,30', iconPos2: '29,58,29,30', moveTo:'viewimages'") View Images
+   
