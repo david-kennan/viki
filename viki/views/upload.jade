@@ -1,14 +1,16 @@
 link(rel="stylesheet", href="/scripts/dojox/form/resources/UploaderFileList.css")
+link(rel="stylesheet", href="/scripts/dijit/themes/claro/claro.css")
 script(type="text/javascript", src="/scripts/upload.js")
-form(name="uploadform", action="/image/upload", method="post", enctype="multipart/form-data")
-  label(for="imagename") Image Name:&nbsp;
-  input(type="text", name="imagename", data-dojo-type="dojox.mobile.TextBox")
-  p
-  label(for="imagetopic") Image Topic:&nbsp;
-  input(type="text", name="imagetopic", value="Outdoors")
-  p
-  label(for="filedata") Image File:&nbsp;
-  input(type="file", name="filedata", id="file", data-dojo-type="dojox.form.Uploader", class="mblButton")
-  div(id="files", data-dojo-type="dojox.form.uploader.FileList", uploaderId="file")
-  p
-  input(type="Submit", value="Upload File", data-dojo-type="dojox.mobile.Button")
+div(class="claro")  
+  form(name="uploadform", action="/image/upload", method="post", enctype="multipart/form-data")
+    label(for="imagename") Image Name:&nbsp;
+    input(type="text", name="imagename", data-dojo-type="dojox.mobile.TextBox")
+    p
+    label(for="imagetopic") Image Topic:&nbsp;
+    input(type="text", name="imagetopic", value="Outdoors")
+    p
+    label(for="filedata") Image File:&nbsp;
+    input(type="file", name="filedata", id="file", data-dojo-type="dojox.form.Uploader", class="mblButton")
+    div(id="files", data-dojo-type="dojox.form.uploader.FileList", uploaderId="file", data-dojo-props="headerIndex: ''")
+    p
+    input(type="Submit", value="Upload File", data-dojo-type="dojox.mobile.Button")
