@@ -1,11 +1,14 @@
 extends layout
 block content
   div#welcome(data-dojo-type="dojox.mobile.ScrollableView", data-dojo-props="selected: true")
-    p Welcome to the visual wiki,
-    | You can: 
-    a(href="/image/upload") Upload an image
-    &nbsp;
-    a(href="/image/view/all") View all images
+    p 
+      | Welcome to the visual wiki, an app designed to let you explore the world much like wikipedia,
+      | but through the use of images! You can upload and tag your own images, or view images others
+      | have uploaded.
+    p Quick Overview:
+    ul
+      li Use the buttons at the bottom to navigate.
+      li Have fun! 
   
   div#upload(data-dojo-type="dojox.mobile.ScrollableView", data-dojo-props="selected: false")
     p Upload view - place holder
