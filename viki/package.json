@@ -13,6 +13,7 @@
     "jade":          "*",
     "js2coffee":     "*",
     "coffee-script": "*",
-    "gm":            "*"
+    "gm":            "*",
+    "bufferjs":      "*"
   }
 }
