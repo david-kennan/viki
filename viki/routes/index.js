@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var Image = mongoose.model('Image', require('../models/image.js'));
 var Fs = require('fs');
 var Grid = mongo.Grid;
-var thumbnailSize = 100;
+var thumbnailSize = 100;  // H x W dimension in pixels
 
 /*
  * GET home page.
@@ -67,13 +67,13 @@ exports.uploadImage = function(req, res) {
   }
   else {
     res.writeHead(200);
-    res.end("No file supplied for upload");
+    res.end("<center><h2>No file supplied for upload, that's an error. You shouldn't be seeing this, so either you're a nefarious user, or there's actually something wrong - we'll look into it. <a href='/'>Go Back</a></h3></center>");
   }
 }
 
 exports.viewimages = function (req, res) {
     Image.find({topic: "Outdoors"}, function (err, images) {
-      res.render('view_images', {title: images[0].topic + ' | All Images', images: images});
+      res.render('view_images', {title: 'All Images', images: images});
     });
 };
 
