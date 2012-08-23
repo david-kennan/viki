@@ -1,5 +1,5 @@
 // This is the node entry point for the viki app
-// 8/12, Sam Greene & Ziv Kennan
+// 8/2012, Sam Greene & Ziv Kennan
 
 // config mongo server
 var mongo_server = 'localhost';
