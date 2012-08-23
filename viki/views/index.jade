@@ -9,8 +9,7 @@ block content
     ul
       li Use the buttons at the bottom to navigate.
       li Have fun! 
-  
-  div#upload(data-dojo-type="dojox.mobile.ScrollableView", data-dojo-props="selected: false")
-    p Upload view - place holder
+  div#upload(data-dojo-type="dojox.mobile.ScrollableView", data-dojo-props='selected: false')
+    div(data-dojo-type="dojox.mobile.ContentPane", data-dojo-props='href:"/image/upload"')
   div#viewimages(data-dojo-type="dojox.mobile.ScrollableView", data-dojo-props="selected: false")
-    p Images view - place holder
+    div(data-dojo-type="dojox.mobile.ContentPane", data-dojo-props='href:"/image/view/all"')

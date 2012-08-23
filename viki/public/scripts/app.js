@@ -10,10 +10,9 @@ debug.log = function(message) {
 }
 // end debugger
 
-require(["dojox/mobile/parser", "dojox/mobile/deviceTheme", "dojox/mobile/ScrollableView",
-         "dojox/mobile/TabBar", "dojox/mobile/compat", "dojox/mobile"], 
-  function(parser, deviceTheme) {
-    parser.parse();
+require(["dojox/mobile/parser", "dojox/mobile/deviceTheme", "dojox/mobile/ScrollableView", "dojox/mobile/TabBar", "dojox/mobile/ContentPane", "dojox/mobile/compat", "dojox/mobile"], 
+  function(mobileParser, deviceTheme) {
+    mobileParser.parse();
     debug.log("loaded dojo etal...");
 });
 
