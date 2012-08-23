@@ -1,6 +1,7 @@
 var mongo = require('mongodb');
 var mongoose = require('mongoose');
 var Image = mongoose.model('Image', require('../models/image.js'));
+var Topic = mongoose.model('Topic', require('../models/topic.js'));
 var Fs = require('fs');
 var Grid = mongo.Grid;
 var thumbnailSize = 100;  // H x W dimension in pixels
@@ -77,9 +78,23 @@ exports.uploadImage = function(req, res) {
                                     var thumbImage = Buffer.concat(thumbArray);
                                     grid.put(thumbImage, {metadata:{category:'image'}, content_type: 'image/jpeg'}, function(err, thumbInfo) {
                                         if (err) console.log(err);
-                                        var newImg = new Image({name:req.body.imagename, dataid:origInfo._id, thumbnailid: thumbInfo._id, dateCreated: new Date(), topic: 'Outdoors'});
-                                        newImg.save();
-                                        res.redirect('/');
+                                        Topic.find({name: req.body.imagetopic}, function(err, topics) {
+                                            var imageTopic;
+                                            if (topics.length > 1) {
+                                                res.end(200, 'Error: there is more than one topic with name ' + req.body.imagetopic);
+                                                return;
+                                            }
+                                            else if (topics.length == 0) {
+                                                imageTopic = new Topic({name:req.body.imagetopic, description: 'A description of this topic'});
+                                                imageTopic.save();
+                                            }
+                                            else {
+                                                imageTopic = topics[0];
+                                            }
+                                            var newImg = new Image({name:req.body.imagename, dataid:origInfo._id, thumbnailid: thumbInfo._id, dateCreated: new Date(), topicid: imageTopic._id});
+                                            newImg.save();
+                                            res.redirect('/');
+                                        });
                                     });
                                 });
                             });
@@ -93,14 +108,29 @@ exports.uploadImage = function(req, res) {
   }
   else {
     res.writeHead(200);
-    res.end("<center><h2>No file supplied for upload, that's an error. You shouldn't be seeing this, so either you're a nefarious user, or there's actually something wrong - we'll look into it. <a href='/'>Go Back</a></h3></center>");
+    res.end("No file supplied for upload, that's an error. You shouldn't be seeing this, so either you're a nefarious user, or there's actually something wrong - we'll look into it.");
   }
 }
 
 exports.viewimages = function (req, res) {
-    Image.find({topic: req.query.topic}, function (err, images) {
+    /*Image.find({topic: req.query.topic}, function (err, images) {
       //res.render('view_images', {title: 'All Images', images: images});
         res.json(200, images);
+    });*/
+    Topic.find({name: req.query.topic}, function (err, topics) {
+        if (topics.length == 0) {
+            res.writeHead(200);
+            res.end('Error: no topic with name ' + req.query.topic + ' found');
+        }
+        else if (topics.length > 1) {
+            res.writeHead(200);
+            res.end('Error: more than one topic with name ' + req.query.topic + 'found');
+        }
+        else {
+            Image.find({topicid: topics[0]._id}, function (err, images) {
+                res.json(200, images);
+            });
+        }
     });
 };
 

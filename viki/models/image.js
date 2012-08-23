@@ -5,7 +5,7 @@ var imageSchema = new mongoose.Schema({
     thumbnailid: String,
     name: String,
     dateCreated: Date,
-    topic: String
+    topicid: String
 });
 
 var Image = mongoose.model('Image', imageSchema);

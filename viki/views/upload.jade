@@ -4,6 +4,9 @@ form(name="uploadform", action="/image/upload", method="post", enctype="multipar
   label(for="imagename") Image Name:&nbsp;
   input(type="text", name="imagename", data-dojo-type="dojox.mobile.TextBox")
   p
+  label(for="imagetopic") Image Topic:&nbsp;
+  input(type="text", name="imagetopic")
+  p
   label(for="filedata") Image File:&nbsp;
   input(type="file", name="filedata", id="file", data-dojo-type="dojox.form.Uploader", class="mblButton")
   div(id="files", data-dojo-type="dojox.form.uploader.FileList", uploaderId="file")
