@@ -2,6 +2,10 @@ doctype 5
 html(lang="en")
   head
     title= title
+    if dev == true
+      // prevent caching during development
+      meta(http-equiv="cache-control", content="no-cache")
+      meta(http-equiv="pragma", content="no-cache")
     meta(name="viewport", content="width=device-width,initial-scale=1,maximum-scale=1,minimum-scale=1,user-scalable=no")
     meta(name="apple-mobile-web-app-capable", content="yes")
     link(rel="stylesheet", href="/stylesheets/style.css")

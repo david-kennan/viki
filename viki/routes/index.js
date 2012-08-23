@@ -9,8 +9,9 @@ var thumbnailSize = 100;  // H x W dimension in pixels
  * GET home page.
  */
 
+// be sure to set dev false after development is complete
 exports.index = function(req, res){
-  res.render('index', { title: 'Welcome' });
+  res.render('index', { title: 'Welcome', dev: true });
 };
 
 exports.upload = function(req, res) {
