@@ -98,8 +98,9 @@ exports.uploadImage = function(req, res) {
 }
 
 exports.viewimages = function (req, res) {
-    Image.find({topic: "Outdoors"}, function (err, images) {
-      res.render('view_images', {title: 'All Images', images: images});
+    Image.find({topic: req.query.topic}, function (err, images) {
+      //res.render('view_images', {title: 'All Images', images: images});
+        res.json(200, images);
     });
 };
 
