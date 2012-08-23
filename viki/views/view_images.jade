@@ -8,4 +8,4 @@ block content
     each image in images
       //p Image Name:&nbsp; #{image.name}
       a(href="/image/get/#{image.dataid}")
-        image(src="/image/get/#{image.thumbnailid}", title="#{image.name}")
+        image(src="/image/get/#{image.thumbnailid ? image.thumbnailid : image.dataid}", title="#{image.name}")
