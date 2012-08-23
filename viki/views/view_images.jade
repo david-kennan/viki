@@ -1,9 +1,1 @@
-if images.length == 0
-  p No images uploaded, would you like to 
-    a(href="/image/upload") upload
-    |  one?
-else
-  each image in images
-    //p Image Name:&nbsp; #{image.name}
-    a(href="/image/get/#{image.dataid}")
-      image(src="/image/get/#{image.thumbnailid ? image.thumbnailid : image.dataid}", title="#{image.name}")
+script(type="text/javascript", src="/scripts/view_images.js")

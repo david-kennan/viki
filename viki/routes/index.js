@@ -113,25 +113,35 @@ exports.uploadImage = function(req, res) {
 }
 
 exports.viewimages = function (req, res) {
-    /*Image.find({topic: req.query.topic}, function (err, images) {
-      //res.render('view_images', {title: 'All Images', images: images});
-        res.json(200, images);
-    });*/
-    Topic.find({name: req.query.topic}, function (err, topics) {
-        if (topics.length == 0) {
-            res.writeHead(200);
-            res.end('Error: no topic with name ' + req.query.topic + ' found');
-        }
-        else if (topics.length > 1) {
-            res.writeHead(200);
-            res.end('Error: more than one topic with name ' + req.query.topic + 'found');
-        }
-        else {
-            Image.find({topicid: topics[0]._id}, function (err, images) {
-                res.json(200, images);
-            });
-        }
-    });
+    if (req.query.type == "JSON") {
+        if (req.query.topic) {
+        Topic.find({name: req.query.topic}, function (err, topics) {
+            if (topics.length == 0) {
+                res.writeHead(200);
+                res.end('Error: no topic with name ' + req.query.topic + ' found');
+            }
+            else if (topics.length > 1) {
+                res.writeHead(200);
+                res.end('Error: more than one topic with name ' + req.query.topic + 'found');
+            }
+            else {
+                Image.find({topicid: topics[0]._id}, function (err, images) {
+                    res.json(200, images);
+                });
+            }
+        });
+    }
+    }
+    else {
+        console.log('images view should be served');
+        res.render('view_images', {title: 'All Images'})
+    }
+    /*else {
+        Image.find(function (err, images) {
+            res.json(200, images);
+        });
+    }
+}*/
 };
 
 exports.getImage = function (req, res) {
