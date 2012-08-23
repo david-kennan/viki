@@ -19,10 +19,11 @@ exports.upload = function(req, res) {
 
 exports.uploadImage = function(req, res) {
   if (req.files.filedata.length != 0) {
-    
+      console.log('image processing started');
     // Image processing
     var gm = require('gm');
     var original = gm(req.files.filedata.path);
+      original.setFormat('jpeg');
     original.interlace('Line');
     original.stream(function(err, stdout, stderr) {
         var dataArray = [];
@@ -49,10 +50,13 @@ exports.uploadImage = function(req, res) {
                         });
                         stdout.on('close', function() {
                             var thumbImage = Buffer.concat(thumbArray);
+                                  console.log(thumbImage.length);
                             grid.put(thumbImage, {metadata:{category:'image'}, content_type: 'image/jpeg'}, function(err, thumbInfo) {
-                                var newImg = new Image({name:req.body.imagename, dataid:origInfo._id, thumbnailid: thumbInfo._id, dateCreated: new Date()});
+                                if (err) console.log(err);
+                                var newImg = new Image({name:req.body.imagename, dataid:origInfo._id, thumbnailid: thumbInfo._id, dateCreated: new Date(), topic: 'Outdoors'});
                                 newImg.save();
                                 res.redirect('/');
+                                console.log('image processing finished');
                             });
                         });
                     });
@@ -68,8 +72,8 @@ exports.uploadImage = function(req, res) {
 }
 
 exports.viewimages = function (req, res) {
-    Image.find(function (err, images) {
-      res.render('view_images', {title: 'All Images', images: images});
+    Image.find({topic: "Outdoors"}, function (err, images) {
+      res.render('view_images', {title: images[0].topic + ' | All Images', images: images});
     });
 };
 
