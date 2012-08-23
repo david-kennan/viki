@@ -12,11 +12,11 @@ var thumbnailSize = 100;  // H x W dimension in pixels
 
 // be sure to set dev false after development is complete
 exports.index = function(req, res){
-  res.render('index', { title: 'Welcome', dev: true });
+  res.render('index', { appname: 'Visual Wiki', dev: true });
 };
 
 exports.upload = function(req, res) {
-    res.render('upload', {title: 'Upload an image'});
+    res.render('upload');
 };
 
 exports.uploadImage = function(req, res) {
@@ -141,7 +141,7 @@ exports.viewimages = function (req, res) {
   }
   else {
     console.log('images view should be served');
-    res.render('view_images', {title: 'All Images'})
+    res.render('view_images')
   }
   /*else {
     Image.find(function (err, images) {

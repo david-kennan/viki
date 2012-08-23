@@ -1,7 +1,7 @@
 doctype 5
 html(lang="en")
   head
-    title= title
+    title= appname
     if dev == true
       // prevent caching during development
       meta(http-equiv="cache-control", content="no-cache")
@@ -11,8 +11,10 @@ html(lang="en")
     link(rel="stylesheet", href="/stylesheets/style.css")
     script(type="text/javascript", src="/scripts/dojo/dojo.js", data-dojo-config="async: true")
     script(type="text/javascript", src="/scripts/app.js")
+    script(type="text/javascript")
+      var appName = "#{appname}";
   body
-    div#titleheader(data-dojo-type="dojox.mobile.Heading", data-dojo-props="fixed: 'top'") Visual Wiki | #{title}
+    div#titleheader(data-dojo-type="dojox.mobile.Heading", data-dojo-props="fixed: 'top'") #{appname} | Welcome
     
     block content
     

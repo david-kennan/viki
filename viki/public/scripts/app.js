@@ -10,9 +10,24 @@ debug.log = function(message) {
 }
 // end debugger
 
+// the main code, loaded with the app
 require(["dojox/mobile/parser", "dojox/mobile/deviceTheme", "dojox/mobile/ScrollableView", "dojox/mobile/TabBar", "dojox/mobile/ContentPane", "dojox/mobile/compat", "dojox/mobile"], 
-  function(mobileParser, deviceTheme) {
-    mobileParser.parse();
-    debug.log("loaded dojo etal...");
-});
+    function(mobileParser, deviceTheme) {
+      mobileParser.parse();
+      debug.log("loaded dojo etal...");
 
+      // When the view changes, update the title as well
+      require(["dojo/topic", "dojo/dom"], function(topic, dom){
+        topic.subscribe("/dojox/mobile/beforeTransitionIn", function(e){
+          if (e.id == "upload") {
+            dom.byId("titleheader").innerHTML = appName + " | Upload";
+          }
+          else if (e.id == "viewimages") {
+            dom.byId("titleheader").innerHTML = appName + " | View Images";
+          }
+          else if (e.id == "welcome") {
+            dom.byId("titleheader").innerHTML = appName + " | Welcome";
+          }
+        });
+      });
+    });
