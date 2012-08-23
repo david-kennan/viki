@@ -18,7 +18,7 @@ require(["dojox/mobile/parser", "dojox/mobile/deviceTheme", "dojox/mobile/Scroll
 
       // When the view changes, update the title as well
       require(["dojo/topic", "dojo/dom"], function(topic, dom){
-        topic.subscribe("/dojox/mobile/beforeTransitionIn", function(e){
+        topic.subscribe("/dojox/mobile/afterTransitionIn", function(e){
           if (e.id == "upload") {
             dom.byId("titleheader").innerHTML = appName + " | Upload";
           }
