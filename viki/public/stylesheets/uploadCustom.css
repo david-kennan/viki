@@ -1,0 +1,8 @@
+/* This is needed to overrride the default appearance of the upload buton  */
+.ucustom .dijitToggleButtonIconChar {
+  display: none;
+}
+
+.ucustom .paddedB {
+  padding: 6px 6px;
+}
