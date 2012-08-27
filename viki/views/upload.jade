@@ -1,17 +1,19 @@
+// not used currently
 link(rel="stylesheet", href="/scripts/dojox/form/resources/UploaderFileList.css")
-link(rel="stylesheet", href="/scripts/dijit/themes/claro/claro.css")
+link(rel="stylesheet", href="/stylesheets/uploadCustom.css")
 script(type="text/javascript", src="/scripts/upload.js")
-p  
-div(class="claro")  
-  form(name="uploadform", action="/image/upload", method="post", enctype="multipart/form-data")
+p
+// ucustom overrides the upload button theme to align it with the mobile theme
+div.ucustom 
+  form(id="uploadForm", name="uploadform", action="/image/upload", method="post", enctype="multipart/form-data")
     label(for="imagename") Image Name:&nbsp;
     input(type="text", name="imagename", data-dojo-type="dojox.mobile.TextBox")
     p
     label(for="imagetopic") Image Topic:&nbsp;
-    input(type="text", name="imagetopic", value="Outdoors")
+    input(type="text", name="imagetopic", value="Outdoors", data-dojo-type="dojox.mobile.TextBox")
     p
     label(for="filedata") Image File:&nbsp;
-    input(type="file", name="filedata", id="file", data-dojo-type="dojox.form.Uploader", class="mblButton", label="Choose a file...")
+    input(type="file", name="filedata", id="file", data-dojo-type="dojox.form.Uploader", class="mblButton paddedB", label="Choose a file...")
     div(id="files", data-dojo-type="dojox.form.uploader.FileList", uploaderId="file", data-dojo-props="headerIndex: ''")
     p
-    input(type="Submit", value="Upload File", data-dojo-type="dojox.mobile.Button")
+    input(type="submit", value="Upload File", data-dojo-type="dojox.mobile.Button")
