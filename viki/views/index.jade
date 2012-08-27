@@ -9,9 +9,10 @@ block content
     ul
       li Use the buttons at the bottom to navigate.
       li Have fun! 
-  div#upload(data-dojo-type="dojox.mobile.ScrollableView", data-dojo-props='selected: false')
+  div#upload(data-dojo-type="dojox.mobile.ScrollableView", data-dojo-props='selected: false', class='ucustom')
     form(id="uploadForm", name="uploadform", action="/image/upload", method="post", enctype="multipart/form-data")
       // ideally include template not code directly
+      // todo: detect ios & don't render
       label(for="imagename") Image Name:&nbsp;
       input(type="text", name="imagename", data-dojo-type="dojox.mobile.TextBox")
       p

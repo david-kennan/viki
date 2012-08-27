@@ -1,26 +1,34 @@
 debug.log('loaded view_images.js');
-require(["dojo/dom", "dojo/request", "dojo/_base/array", "dojo/dom-construct"], function (dom, request, array, domConstruct, parser) {
-  request.get('/image/view/all?type=JSON&topic=Outdoors', {handleAs:"json"}).then(function(imagejson) {
+require(["dojo/store/JsonRest", "dojo/dom", "dojo/dom-geometry", "dijit/registry"], function(JsonRest, dom, domGeom, registry) {
+    function numVisibleImages() {
+        var dims = domGeom.getContentBox(dom.byId("welcome"));
+        var imagesWide = Math.floor(dims.w / 106);
+        var imagesHigh = Math.floor(dims.h / 106);
+        return {number: imagesWide * imagesHigh, imageDim: dims.w / imagesWide};
+    }
+    var imgDispInfo = numVisibleImages();
+    var numImages = imgDispInfo.number * 2;
+    var pagesDisplayed = 0;
     var imageDiv = dom.byId('imageCollection');
-    if(imagejson.length != 0) {
-      array.forEach(imagejson, function(image, index) {
-        var imageHTML = "<a href='/image/get/" + image.dataid + "'><img src='/image/get/" + image.thumbnailid + "'></img></a>";
-        imageDiv.innerHTML += imageHTML;
-      });
+    var imageWidth = imgDispInfo.imageDim - 6;
+    // To do: show message if there are no images
+    var imageStore = new JsonRest({target:'/image/view/all'});
+    function getPage() {
+        var images = imageStore.query({type:'JSON', topic:'Outdoors', pageSize: numImages, pagesViewed:pagesDisplayed});
+        images.map(function(image) {
+                   var imageHTML = "<a href='/image/get/" + image.dataid + "'><img src='/image/get/" + image.thumbnailid + "' height=" + imageWidth + "width=" + imageWidth + "></img></a>";
+                   imageDiv.innerHTML += imageHTML;
+        });
+        pagesDisplayed++;
     }
-    else {
-        imageDiv.innerHTML = "There aren't any images in viki, if you'd like to upload one use the upload pane below...";
-    }
-  });
-  // I copied this code from http://dojo-toolkit.33424.n3.nabble.com/MOBILE-dojox-mobile-ScrollableView-and-infinite-scroll-td3709466.html
-  // It should detect when the user scrolls to the bottom but doesn't work now
-  var imagesView = dom.byId("viewimages");
-  imagesView.adjustDestination = function(to, pos) {
-        alert('adjustDestination called');
-        var contentHeight = imagesView.c.h;
-        var displayHeight = imagesView.d.h;
-        if (to.y < displayHeight - contentHeight) {
-        alert('scrolled to bottom');
+    getPage();
+    registry.byId("viewimages").adjustDestination = function (to, pos) {
+        var dim = this.getDim();
+        var ch = dim.c.h;
+        var dh = dim.d.h;
+        if (to.y < dh - ch) {
+        console.log('reached end');
+        getPage();
         }
     };
 });

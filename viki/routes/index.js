@@ -58,7 +58,7 @@ exports.uploadImage = function(req, res) {
                             if (maxDimension < 100) {
                                 var newImg = new Image({name:req.body.imagename, dataid:origInfo._id, thumbnailid: null, dateCreated: new Date(), topic: 'Outdoors'});
                                 newImg.save();
-                                res.redirect('/');
+                                res.writeHead(200);
                                 return;
                             }
                             var resizeFactor = minDimension/thumbnailSize;
@@ -90,7 +90,7 @@ exports.uploadImage = function(req, res) {
                                             }
                                             var newImg = new Image({name:req.body.imagename, dataid:origInfo._id, thumbnailid: thumbInfo._id, dateCreated: new Date(), topicid: imageTopic._id});
                                             newImg.save();
-                                            res.redirect('/');
+                                            res.writeHead(200);
                                         });
                                     });
                                 });
@@ -110,22 +110,22 @@ exports.uploadImage = function(req, res) {
 }
 
 exports.viewimages = function (req, res) {
-  if (req.query.type == "JSON") {
-    if (req.query.topic) {
-      Topic.find({name: req.query.topic}, function (err, topics) {
-        // for developement only //
+    var query = req.query;
+  if (query.type == "JSON") {
+    if (query.topic) {
+        Topic.find({name: query.topic}, function (err, topics) {
+                   // for developement only //
         if (topics.length == 0) {
-          var tmptopic = new Topic({name: 'Outdoors', description: 'Outdoor Images', category: 'Nature'});
-          tmptopic.save();
+          //var tmptopic = new Topic({name: 'Outdoors', description: 'Outdoor Images', category: 'Nature'});
+          //tmptopic.save();
         }
         // delete after dev //
-                 
         else if (topics.length > 1) {
           res.writeHead(200);
-          res.end('Error: more than one topic with name ' + req.query.topic + 'found');
+          res.end('Error: more than one topic with name ' + req.query.topic + ' found');
         }
         else {
-          Image.find({topicid: topics[0]._id}, function (err, images) {
+          Image.find({topicid: topics[0]._id}, {}, {skip:query.pageSize * query.pagesViewed, limit:query.pageSize}, function (err, images) {
             res.json(200, images);
           });
         }
