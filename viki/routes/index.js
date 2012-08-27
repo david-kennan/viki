@@ -19,6 +19,7 @@ exports.uploadImage = function(req, res) {
   if (req.files.filedata.length != 0) {
     // Image processing
     var path = req.files.filedata.path;
+      console.log(path);
     var util = require('util');
     var exec = require('child_process').exec;
     exec('file -b --mime-type ' + path, function(error, stdout, stderr) {
@@ -118,11 +119,7 @@ exports.viewimages = function (req, res) {
           tmptopic.save();
         }
         // delete after dev //
-
-        if (topics.length == 0) {
-          res.writeHead(200);
-          res.end('Error: no topic with name ' + req.query.topic + ' found');
-        }
+                 
         else if (topics.length > 1) {
           res.writeHead(200);
           res.end('Error: more than one topic with name ' + req.query.topic + 'found');
@@ -136,7 +133,6 @@ exports.viewimages = function (req, res) {
     }
   }
   else {
-    console.log('images view should be served');
     res.render('view_images')
   }
   /*else {
