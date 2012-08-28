@@ -3,13 +3,12 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
     function(declare, JsonRest, dom, domGeom, registry, ScrollableView, ContentPane, domConstruct) {
       return declare("viki.scrollableImageView", [ScrollableView], {
         // this is now the new widget context
-        clickhandler: function(e) {
+        clickHandler: function(e) {
           debug.log("image clicked: " + e);
         },
         startup: function() {
           debug.log("viki.scrollableImageView init...");
-          
-          var handler = this.clickhandler;
+          var handler = this.clickHandler;
           var imgDispInfo = this.numVisibleImages();
           var numImages = imgDispInfo.number * 2;  // get two pages at a time
           var pagesDisplayed = 0;
