@@ -3,9 +3,13 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
     function(declare, JsonRest, dom, domGeom, registry, ScrollableView, ContentPane, domConstruct) {
       return declare("viki.scrollableImageView", [ScrollableView], {
         // this is now the new widget context
+        clickhandler: function(e) {
+          debug.log("image clicked: " + e);
+        },
         startup: function() {
           debug.log("viki.scrollableImageView init...");
-
+          
+          var handler = this.clickhandler;
           var imgDispInfo = this.numVisibleImages();
           var numImages = imgDispInfo.number * 2;  // get two pages at a time
           var pagesDisplayed = 0;
@@ -18,7 +22,8 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
           function getPage() {
             var images = imageStore.query({type:'JSON', topic:'Outdoors', pageSize: numImages, pagesViewed:pagesDisplayed}).map(function(image) {
             var aElem = domConstruct.create("a", {cursor:'pointer'}, imageDiv);
-            domConstruct.create("img", {src: '/image/get/' + image.thumbnailid, height: imageWidth, width: imageWidth}, aElem);
+            domConstruct.create("img", {src: '/image/get/' + image.thumbnailid, height: imageWidth, width: imageWidth, id: image.dataid, 
+                                        onclick: function(){handler(this.id)}  }, aElem);
             return 0;
             });
             pagesDisplayed++;
@@ -34,7 +39,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
 
           this.inherited(arguments);
         },
-        numVisibleImages: function () {
+        numVisibleImages: function() {
           var dims = domGeom.getContentBox(dom.byId("welcome"));  // BAD!!! - fix this by not referencing a dom element by name
           var imagesWide = Math.floor(dims.w / 106);
           var imagesHigh = Math.floor(dims.h / 106);
