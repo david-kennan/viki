@@ -17,8 +17,6 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
           var imageStore = new JsonRest({target: this.source});
           function getPage() {
             var images = imageStore.query({type:'JSON', topic:'Outdoors', pageSize: numImages, pagesViewed:pagesDisplayed}).map(function(image) {
-              //var imageHTML = "<a href='/image/get/" + image.dataid + "'><img src='/image/get/" + image.thumbnailid
-              //+ "' height=" + imageWidth + "width=" + imageWidth + "></img></a>";
             var aElem = domConstruct.create("a", {cursor:'pointer'}, imageDiv);
             domConstruct.create("img", {src: '/image/get/' + image.thumbnailid, height: imageWidth, width: imageWidth}, aElem);
             return 0;
