@@ -1,6 +1,6 @@
 debug.log('loaded view_images.js');
 
-require(["dojo/store/JsonRest", "dojo/dom", "dojo/dom-geometry", "dijit/registry"], function(JsonRest, dom, domGeom, registry) {
+require(["dojo/store/JsonRest", "dojo/dom", "dojo/dom-geometry", "dijit/registry", "dojo/dom-construct"], function(JsonRest, dom, domGeom, registry, domConstruct) {
   // todo wrap this all in a scrollable view inheriting class
   function numVisibleImages() {
     var dims = domGeom.getContentBox(dom.byId("welcome"));
@@ -19,9 +19,8 @@ require(["dojo/store/JsonRest", "dojo/dom", "dojo/dom-geometry", "dijit/registry
   var imageStore = new JsonRest({target:'/image/view/all'});
   function getPage() {
     var images = imageStore.query({type:'JSON', topic:'Outdoors', pageSize: numImages, pagesViewed:pagesDisplayed}).map(function(image) {
-      var imageHTML = "<a href='/image/get/" + image.dataid + "'><img src='/image/get/" + image.thumbnailid 
-      + "' height=" + imageWidth + "width=" + imageWidth + "></img></a>";
-    imageDiv.innerHTML += imageHTML;
+    var aElem = domConstruct.create("a", {href: '/image/get/' + image.dataid}, imageDiv);
+    domConstruct.create("img", {src: '/image/get/' + image.thumbnailid, height: imageWidth, width: imageWidth}, aElem);
     return 0;
     });
     pagesDisplayed++;

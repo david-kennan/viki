@@ -1,3 +1,22 @@
 img {
     padding: 3px;
 }
+
+.loadingOverlay {
+    background: #000;
+    position: absolute;
+    z-index: 1001;
+    display: none;
+}
+ 
+.pageOverlay {
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+}
+ 
+.loadingMessage {
+    padding: 25px 40px;
+    color: #000;
+}

@@ -19,7 +19,6 @@ exports.uploadImage = function(req, res) {
   if (req.files.filedata.length != 0) {
     // Image processing
     var path = req.files.filedata.path;
-    console.log(path);
     var util = require('util');
     var exec = require('child_process').exec;
     exec('file -b --mime-type ' + path, function(error, stdout, stderr) {
