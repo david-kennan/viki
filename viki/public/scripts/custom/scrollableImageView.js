@@ -18,7 +18,8 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
           var imageWidth = imgDispInfo.imageDim - 6;
 
           var imageStore = new JsonRest({target: this.source});
-          function getPage() {
+          
+          this.getPage =  function() {
             var images = imageStore.query({type:'JSON', topic:'Outdoors', pageSize: numImages, pagesViewed:pagesDisplayed}).map(function(image) {
             var aElem = domConstruct.create("a", {cursor:'pointer'}, imageDiv);
             domConstruct.create("img", {src: '/image/get/' + image.thumbnailid, height: imageWidth, width: imageWidth, id: image.dataid, 
@@ -30,7 +31,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
           }
 
           // get the first set of images, showing a message if there are no images
-          getPage().then(function(d){
+          this.getPage().then(function(d){
             if (!d.length) {
               imageDiv.innerHTML = "There are no images in " + appName + ", use the upload tab to add images.";
             }
@@ -49,8 +50,8 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
           var ch = dim.c.h;
           var dh = dim.d.h;
           if (to.y < dh - ch) {
-            //getPage();
-            debug.log("reached bottom of content")
+            this.getPage();
+            debug.log("bottom reached, got more content...")
           }
         }
         // end widget
