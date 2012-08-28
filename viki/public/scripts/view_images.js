@@ -14,8 +14,6 @@ require(["dojo/store/JsonRest", "dojo/dom", "dojo/dom-geometry", "dijit/registry
   var imageDiv = dom.byId('imageCollection');
   var imageWidth = imgDispInfo.imageDim - 6;
 
-  // To do: show message if there are no images
-
   var imageStore = new JsonRest({target:'/image/view/all'});
   function getPage() {
     var images = imageStore.query({type:'JSON', topic:'Outdoors', pageSize: numImages, pagesViewed:pagesDisplayed}).map(function(image) {

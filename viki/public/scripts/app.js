@@ -30,10 +30,4 @@ require(["dojox/mobile/parser", "dojox/mobile/deviceTheme", "dojox/mobile/Scroll
           }
         });
       });
-        // When the download completes, change the view
-      /*require(["dojo/on", "dijit/registry"], function(on, dom){
-        on(dom.byId('file'), "onBegin", function(e){
-                        alert('upload began');
-        });
-      });*/
     });
