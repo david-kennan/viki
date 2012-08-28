@@ -11,7 +11,7 @@ debug.log = function(message) {
 // end debugger
 
 // the main code, loaded with the app
-require(["dojox/mobile/parser", "dojox/mobile/deviceTheme", "dojox/mobile/ScrollableView", "dojox/mobile/TabBar", "dojox/mobile/ContentPane", "dojox/mobile/compat", "dojox/mobile", "dojox/form/Uploader", "dojox/form/uploader/FileList", "dojox/mobile/Button", "dojox/mobile/TextBox","dojox/form/uploader/plugins/HTML5" ], 
+require(["dojox/mobile/parser", "dojox/mobile/deviceTheme", "dojox/mobile/ScrollableView", "dojox/mobile/TabBar", "dojox/mobile/ContentPane", "dojox/mobile/compat", "dojox/mobile", "dojox/form/Uploader", "dojox/form/uploader/FileList", "dojox/mobile/Button", "dojox/mobile/TextBox","dojox/form/uploader/plugins/HTML5", "custom/scrollableImageView" ], 
     function(mobileParser, deviceTheme) {
       mobileParser.parse();
       debug.log("loaded dojo etal...");
@@ -30,10 +30,4 @@ require(["dojox/mobile/parser", "dojox/mobile/deviceTheme", "dojox/mobile/Scroll
           }
         });
       });
-        // When the download completes, change the view
-      /*require(["dojo/on", "dijit/registry"], function(on, dom){
-        on(dom.byId('file'), "onBegin", function(e){
-                        alert('upload began');
-        });
-      });*/
     });

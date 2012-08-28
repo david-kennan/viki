@@ -1,19 +1,22 @@
-// not used currently
 link(rel="stylesheet", href="/scripts/dojox/form/resources/UploaderFileList.css")
 link(rel="stylesheet", href="/stylesheets/uploadCustom.css")
 script(type="text/javascript", src="/scripts/upload.js")
-p
 // ucustom overrides the upload button theme to align it with the mobile theme
-div.ucustom 
-  form(id="uploadForm", name="uploadform", action="/image/upload", method="post", enctype="multipart/form-data")
-    label(for="imagename") Image Name:&nbsp;
-    input(type="text", name="imagename", data-dojo-type="dojox.mobile.TextBox")
+if !isIOS
+  div.ucustom
     p
-    label(for="imagetopic") Image Topic:&nbsp;
-    input(type="text", name="imagetopic", value="Outdoors", data-dojo-type="dojox.mobile.TextBox")
-    p
-    label(for="filedata") Image File:&nbsp;
-    input(type="file", name="filedata", id="file", data-dojo-type="dojox.form.Uploader", class="mblButton paddedB", label="Choose a file...")
-    div(id="files", data-dojo-type="dojox.form.uploader.FileList", uploaderId="file", data-dojo-props="headerIndex: ''")
-    p
-    input(type="submit", value="Upload File", data-dojo-type="dojox.mobile.Button")
+    form(id="uploadForm", name="uploadform", action="/image/upload", method="post", enctype="multipart/form-data")
+      // todo: detect ios & don't render
+      label(for="imagename") Image Name:&nbsp;
+      input(type="text", name="imagename", data-dojo-type="dojox.mobile.TextBox")
+      p
+      label(for="imagetopic") Image Topic:&nbsp;
+      input(type="text", name="imagetopic", value="Outdoors", data-dojo-type="dojox.mobile.TextBox")
+      p
+      label(for="filedata") Image File:&nbsp;
+      input(type="file", name="filedata", id="file", data-dojo-type="dojox.form.Uploader", class="mblButton paddedB", label="Choose a file...")
+      div(id="files", data-dojo-type="dojox.form.uploader.FileList", uploaderId="file", data-dojo-props="headerIndex: ''")
+      p
+      input(type="submit", value="Upload File", data-dojo-type="dojox.mobile.Button")
+else 
+  p Sorry, iOS currently does not support browser-based file uploads; please upgrade to iOS 6 when it comes out...

@@ -9,23 +9,8 @@ block content
     ul
       li Use the buttons at the bottom to navigate.
       li Have fun! 
-  div#upload(data-dojo-type="dojox.mobile.ScrollableView", data-dojo-props='selected: false', class='ucustom')
-    form(id="uploadForm", name="uploadform", action="/image/upload", method="post", enctype="multipart/form-data")
-      // ideally include template not code directly
-      // todo: detect ios & don't render
-      label(for="imagename") Image Name:&nbsp;
-      input(type="text", name="imagename", data-dojo-type="dojox.mobile.TextBox")
-      p
-      label(for="imagetopic") Image Topic:&nbsp;
-      input(type="text", name="imagetopic", value="Outdoors", data-dojo-type="dojox.mobile.TextBox")
-      p
-      label(for="filedata") Image File:&nbsp;
-      input(type="file", name="filedata", id="file", data-dojo-type="dojox.form.Uploader", class="mblButton paddedB", label="Choose a file...")
-      div(id="files", data-dojo-type="dojox.form.uploader.FileList", uploaderId="file", data-dojo-props="headerIndex: ''")
-      p
-      input(type="submit", value="Upload File", data-dojo-type="dojox.mobile.Button")
-    //div(data-dojo-type="dojox.mobile.ContentPane", data-dojo-props='href:"/image/upload"')
-  div#viewimages(data-dojo-type="dojox.mobile.ScrollableView", data-dojo-props="selected: false")
-    div#imageCollection(data-dojo-type="dojox.mobile.ContentPane", data-dojo-props='href:"/image/view/all"')
+  div#upload(data-dojo-type="dojox.mobile.ScrollableView", data-dojo-props='selected: false')
+    include upload
+  div#viewimages(data-dojo-type="viki.scrollableImageView", data-dojo-props="selected: false, source: '/image/view/all'")
   div#imageOverlay(class='loadingOverlay pageOverlay')
     div#imageContainer(width='100px', height='100px')
