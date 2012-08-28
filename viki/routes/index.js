@@ -8,7 +8,10 @@ var thumbnailSize = 100;  // H x W dimension in pixels
 
 // be sure to set dev false after development is complete
 exports.index = function(req, res){
-  res.render('index', { appname: 'Visual Wiki', dev: true });
+  // detect iOS and disable upload for now, will add back one supported in iOS
+  var ua = req.headers['user-agent'];
+  var isIOS = /iPad/i.test(ua) || /iPhone/i.test(ua);
+  res.render('index', { appname: 'Visual Wiki', dev: true, isIOS: isIOS });
 };
 
 exports.upload = function(req, res) {
