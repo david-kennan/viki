@@ -1,9 +1,10 @@
 img {
     padding: 3px;
+    cursor: pointer;
 }
 
 .loadingOverlay {
-    background: #000;
+    background: rgba(0,0,0,0.75);
     position: absolute;
     z-index: 1001;
     display: none;
@@ -13,10 +14,18 @@ img {
 .pageOverlay {
     top: 0;
     left: 0;
-    height: 100%;
     width: 100%;
 }
 
 #imageOverlay img {
-    
+    position: absolute;
+    padding: 0;
+}
+
+#imageOverlay input {
+    position: fixed;
+    height: 30px;
+    right: 10px;
+    top: 10px;
+    z-index: 1002;
 }
