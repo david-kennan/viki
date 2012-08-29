@@ -57,18 +57,13 @@ exports.uploadImage = function(req, res) {
                 var landscape = value.width > value.height;
                 var maxDimension = landscape ? value.width : value.height;
                 var minDimension = landscape ? value.height : value.width;
-                if (maxDimension < 100) {
-                  var newImg = new Image({name:req.body.imagename, dataid:origInfo._id, thumbnailid: null, dateCreated: new Date(), topic: 'Outdoors', votes: 0});
-                  newImg.save();
-                  res.writeHead(200);
-                  res.end();
-                  return;
+                if (maxDimension > 100) {
+                    var resizeFactor = minDimension/thumbnailSize;
+                    original.resize(value.width/resizeFactor, value.height/resizeFactor);
+                    var cropX = landscape ? (value.width/resizeFactor - thumbnailSize) / 2 : 0;
+                    var cropY = landscape ? 0 : (value.height/resizeFactor - thumbnailSize) / 2;
+                    original.crop(thumbnailSize, thumbnailSize, cropX, cropY);
                 }
-                var resizeFactor = minDimension/thumbnailSize;
-                original.resize(value.width/resizeFactor, value.height/resizeFactor);
-                var cropX = landscape ? (value.width/resizeFactor - thumbnailSize) / 2 : 0;
-                var cropY = landscape ? 0 : (value.height/resizeFactor - thumbnailSize) / 2;
-                original.crop(thumbnailSize, thumbnailSize, cropX, cropY);
                 original.stream(function(err, stdout, stderr) {
                   var thumbArray = [];
                   stdout.on('data', function(data) {
@@ -120,8 +115,9 @@ exports.viewimages = function (req, res) {
       Topic.find({name: query.topic}, function (err, topics) {
         // for developement only //
         if (topics.length == 0) {
-          //var tmptopic = new Topic({name: 'Outdoors', description: 'Outdoor Images', category: 'Nature'});
-          //tmptopic.save();
+          var tmptopic = new Topic({name: 'Outdoors', description: 'Outdoor Images', category: 'Nature'});
+          tmptopic.save();
+          res.json(200, '{}');
         }
         // delete after dev //
         else if (topics.length > 1) {
@@ -129,7 +125,7 @@ exports.viewimages = function (req, res) {
           res.end('Error: more than one topic with name ' + req.query.topic + ' found');
         }
         else {
-          Image.find({topicid: topics[0]._id}, {}, {skip:query.pageSize * query.pagesViewed, limit:query.pageSize}, function (err, images) {
+          Image.find({topicid: topics[0]._id}, {}, {skip:query.pageSize * query.pagesViewed, limit:query.pageSize}).sort('-votes').exec(function (err, images) {
             res.json(200, images);
           });
         }

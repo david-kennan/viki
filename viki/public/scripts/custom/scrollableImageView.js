@@ -9,9 +9,62 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
             var overlay = dom.byId('imageOverlay');
             domStyle.set(overlay, "height", win.getBox().h + "px"); // this is needed to properly size the view in iOS
             var thumbnailBox = domGeom.getMarginBox(thumbnailView);
+            var imgContainer = dom.byId('imageContainer');
             var imageElem = domConstruct.create("img", {src: '/image/get/' + image}, overlay);
             var closeButton = dom.byId("closeButton");
             on(imageElem, "load", function() { // binding to the load event may not work in all browsers, it is not in the W3C specs
+                /*var imagePadding = domStyle.get(thumbnailView, "padding");
+                var thumbnailWidth = thumbnailBox.w - imagePadding * 2;
+                console.log(imagePadding);
+                domStyle.set(overlay, "display", "block");
+                domStyle.set(imgContainer, "width", thumbnailWidth + "px");
+                domStyle.set(imgContainer, "height", thumbnailWidth + "px");
+                domStyle.set(imgContainer, "left", (thumbnailBox.l + imagePadding) + "px");
+                domStyle.set(imgContainer, "top", (thumbnailBox.t + 44 + imagePadding) + "px");
+                domStyle.set(imgContainer, "overflow", "hidden");
+                var fullImgDim = domGeom.getMarginBox(imageElem);
+                var imgRatio = fullImgDim.w / fullImgDim.h;
+                var thumbnailDimensions = domStyle.get(thumbnailView, "width");
+                if (fullImgDim.w > fullImgDim.h) {
+                    domStyle.set(imageElem, "width", "auto");
+                    domStyle.set(imageElem, "height", (thumbnailWidth) + "px");
+                    domStyle.set(imageElem, "margin-left", (-(imgRatio - 1) * thumbnailDimensions / 2) + "px");
+                }
+                else {
+                    domStyle.set(imageElem, "height", "auto");
+                    domStyle.set(imageElem, "width", (thumbnailWidth) + "px");
+                    domStyle.set(imageElem, "margin-top", (-(1 / imgRatio - 1) * thumbnailDimensions / 2) + "px");
+                }
+                var divSize = domGeom.getMarginBox(overlay);
+                var dispRatio = divSize.w / divSize.h;
+                var animProps = {};
+                var buttonsHeight = domGeom.getMarginBox(closeButton).h;
+                // this if/else statement sets properties that center the image
+                if (imgRatio > dispRatio) {
+                    animProps.width = divSize.w;
+                    animProps.left = 0;
+                    animProps.top = (divSize.h - divSize.w / imgRatio) / 2;
+                    //domStyle.set(imgContainer, "height", "auto");
+                }
+                else {
+                    divSize.h -= buttonsHeight;
+                    animProps.height = divSize.h;
+                    animProps.top = buttonsHeight;
+                    animProps.left = (divSize.w - divSize.h * imgRatio) / 2;
+                    //domStyle.set(imgContainer, "width", "auto");
+                }
+                baseFx.animateProperty({
+                    node: overlay,
+                    properties: {opacity : 1},
+                    duration: 500
+                }).play();
+                
+                baseFx.animateProperty({
+                    node: imgContainer,
+                    properties: animProps,
+                    duration: 500
+                }).play();*/
+                
                 domStyle.set(overlay, "display", "block");
                 var fullImgDim = domGeom.getMarginBox(imageElem);
                 var imgRatio = fullImgDim.w / fullImgDim.h;
@@ -21,6 +74,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                 domStyle.set(imageElem, "left", (thumbnailBox.l + 50) + "px");
                 domStyle.set(imageElem, "top", (thumbnailBox.t + 50 + 44) + "px");
                 var buttonsHeight = domGeom.getMarginBox(closeButton).h;
+                console.log(buttonsHeight);
                 // this if/else statement sets properties that center the image
                 if (imgRatio > dispRatio) {
                     animProps.width = divSize.w;
@@ -49,7 +103,22 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                     duration: 500
                 }).play();
             });
+            var likeButton = registry.byId("likeButton");
+            likeButton.set('disabled', false);
+            var likeClick = on(likeButton, "click", function() {
+                console.log("likeButton clicked");
+                request("/image/like/" + image).then(
+                    function(text) {
+                        console.log(text);
+                        likeButton.set('disabled', true);
+                    },
+                    function(error) {
+                        console.log(error);
+                    }
+                );
+            });
             on(closeButton, "click", function() {
+                likeClick.remove();
                 var fadeAnim = baseFx.animateProperty({
                     node: overlay,
                     properties: {opacity: 0},
@@ -64,20 +133,6 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                     domConstruct.destroy(imageElem);
                     domStyle.set(overlay, "display", "none");
                 });
-            });
-            var likeButton = registry.byId("likeButton");
-            likeButton.set('disabled', false);
-            on(likeButton, "click", function() {
-                console.log("likeButton clicked");
-                request("/image/like/" + image).then(
-                    function(text) {
-                        console.log(text);
-                        likeButton.set('disabled', true);
-                    },
-                    function(error) {
-                        console.log(error);
-                    }
-                );
             });
         },
         startup: function() {
