@@ -5,8 +5,14 @@ var imageSchema = new mongoose.Schema({
     thumbnailid: String,
     name: String,
     dateCreated: Date,
-    topicid: String
+    topicid: String,
+    votes: Number
 });
+
+imageSchema.methods.like = function () {
+    this.votes++;
+    this.save();
+};
 
 var Image = mongoose.model('Image', imageSchema);
 module.exports.Image = Image;

@@ -23,9 +23,12 @@ img {
 }
 
 #imageOverlay input {
-    position: fixed;
-    height: 30px;
-    right: 10px;
-    top: 10px;
+    position: static;
+    height: 35px;
+    margin-left: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
     z-index: 1002;
+    font-size: 18px;
 }
+

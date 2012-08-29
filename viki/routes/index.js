@@ -58,7 +58,7 @@ exports.uploadImage = function(req, res) {
                 var maxDimension = landscape ? value.width : value.height;
                 var minDimension = landscape ? value.height : value.width;
                 if (maxDimension < 100) {
-                  var newImg = new Image({name:req.body.imagename, dataid:origInfo._id, thumbnailid: null, dateCreated: new Date(), topic: 'Outdoors'});
+                  var newImg = new Image({name:req.body.imagename, dataid:origInfo._id, thumbnailid: null, dateCreated: new Date(), topic: 'Outdoors', votes: 0});
                   newImg.save();
                   res.writeHead(200);
                   res.end();
@@ -91,7 +91,7 @@ exports.uploadImage = function(req, res) {
                         else {
                           imageTopic = topics[0];
                         }
-                      var newImg = new Image({name:req.body.imagename, dataid:origInfo._id, thumbnailid: thumbInfo._id, dateCreated: new Date(), topicid: imageTopic._id});
+                      var newImg = new Image({name:req.body.imagename, dataid:origInfo._id, thumbnailid: thumbInfo._id, dateCreated: new Date(), topicid: imageTopic._id, votes: 0});
                       newImg.save();
                       res.writeHead(200);
                       res.end();
@@ -158,4 +158,23 @@ exports.getImage = function (req, res) {
     res.writeHead(200, {'content-type':'image/jpeg'});
     res.end(data, 'binary');
   });
+};
+
+exports.likeImage = function (req, res) {
+    var id = req.params.imageID;
+    var image = Image.find({dataid: id}, function(err, images) {
+        if (images.length == 0) {
+            res.writeHead(200);
+            res.end('error: no images with id ' + id + ' found when like clicked.');
+        }
+        else if (images.length > 1) {
+            res.writeHead(200);
+            res.end('error: more than one image  with id ' + id + ' found when like clicked.');
+        }
+        else {
+            images[0].like();
+            res.writeHead(200);
+            res.end("Sucess: now image's votes are " + images[0].votes + "\n");
+        }
+    });
 };
