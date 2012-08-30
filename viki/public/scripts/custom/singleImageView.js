@@ -3,6 +3,7 @@ define(["dojo/_base/declare", "dojo/dom", "dojo/dom-geometry", "dojo/dom-constru
         overlayID: "",
         constructor: function(args) {
             declare.safeMixin(this, args);
+            console.log('singleimageView constructor called');
         },
         startup: function() {
             debug.log("viki.singleImageView init...");

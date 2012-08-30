@@ -169,6 +169,8 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
           });
 
           this.inherited(arguments);
+          
+          //this.singleImageView = new singleImageView({overlayID: "imageOverlay"});
         },
         numVisibleImages: function() {
           var dims = domGeom.getContentBox(dom.byId("welcome"));  // BAD!!! - fix this by not referencing a dom element by name
