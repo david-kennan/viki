@@ -2,6 +2,8 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
     function(declare, JsonRest, dom, domGeom, registry, ScrollableView, ContentPane, domConstruct, domStyle, baseFx, fx, JSON, on, win, request) {
       return declare("viki.scrollableImageView", [ScrollableView], {
         // this is now the new widget context
+        
+        // this handler is called when an image is clicked, and is passed an image id
         clickHandler: function(image) {
           debug.log("image clicked: " + image);
             var thumbnailView = dom.byId(image);
@@ -137,6 +139,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                 });
             });
         },
+        // this is called when the view if first created - setup and such
         startup: function() {
           debug.log("viki.scrollableImageView init...");
           var handler = this.clickHandler;
@@ -150,7 +153,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
 
           var imageStore = new JsonRest({target: this.source});
           
-          this.getPage =  function() {
+          this.getPage = function () {
             var images = imageStore.query({type:'JSON', topic:'Outdoors', pageSize: numImages, pagesViewed:pagesDisplayed}).map(function(image) {
             var aElem = domConstruct.create("a", {cursor:'pointer'}, imageDiv);
             domConstruct.create("img", {src: '/image/get/' + image.thumbnailid, height: imageWidth, width: imageWidth, id: image.dataid, 

@@ -12,7 +12,9 @@ html(lang="en")
     script(type="text/javascript", src="/scripts/dojo/dojo.js", data-dojo-config="async:true, packages:[{name:'custom',location:'/scripts/custom'}]")
     script(type="text/javascript", src="/scripts/app.js")
     script(type="text/javascript")
-      var appName = "#{appname}";
+      var appName   = "#{appname}";
+      var isIOS     = "#{isIOS}";
+      var isAndroid = "#{isAndroid}";
   body
     div#titleheader(data-dojo-type="dojox.mobile.Heading", data-dojo-props="fixed: 'top'") #{appname} | Welcome
     
