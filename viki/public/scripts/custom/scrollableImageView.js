@@ -1,71 +1,83 @@
-define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geometry", "dijit/registry", "dojox/mobile/ScrollableView", "dojox/mobile/ContentPane", "dojo/dom-construct", "dojo/dom-style", "dojo/_base/fx", "dojo/json", "dojo/on", "dojo/window", "dojo/request"],
-    function(declare, JsonRest, dom, domGeom, registry, ScrollableView, ContentPane, domConstruct, domStyle, baseFx, JSON, on, win, request) {
+define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geometry", "dijit/registry", "dojox/mobile/ScrollableView", "dojox/mobile/ContentPane", "dojo/dom-construct", "dojo/dom-style", "dojo/_base/fx", "dojo/fx", "dojo/json", "dojo/on", "dojo/window", "dojo/request"],
+    function(declare, JsonRest, dom, domGeom, registry, ScrollableView, ContentPane, domConstruct, domStyle, baseFx, fx, JSON, on, win, request) {
       return declare("viki.scrollableImageView", [ScrollableView], {
         // this is now the new widget context
         clickHandler: function(image) {
           debug.log("image clicked: " + image);
-            //var container = dom.byId('imageContainer');
+            var container = dom.byId('imageContainer');
             var thumbnailView = dom.byId(image);
             var overlay = dom.byId('imageOverlay');
             domStyle.set(overlay, "height", win.getBox().h + "px"); // this is needed to properly size the view in iOS
             var thumbnailBox = domGeom.getMarginBox(thumbnailView);
             var imgContainer = dom.byId('imageContainer');
-            var imageElem = domConstruct.create("img", {src: '/image/get/' + image}, overlay);
+            var imageElem = domConstruct.create("img", {src: '/image/get/' + image}, container);
             var closeButton = dom.byId("closeButton");
+            var fullImgDim;
+            var imagePadding = domStyle.get(thumbnailView, "padding");
+            var thumbnailWidth = thumbnailBox.w - imagePadding * 2;
             on(imageElem, "load", function() { // binding to the load event may not work in all browsers, it is not in the W3C specs
-                /*var imagePadding = domStyle.get(thumbnailView, "padding");
-                var thumbnailWidth = thumbnailBox.w - imagePadding * 2;
-                console.log(imagePadding);
                 domStyle.set(overlay, "display", "block");
                 domStyle.set(imgContainer, "width", thumbnailWidth + "px");
                 domStyle.set(imgContainer, "height", thumbnailWidth + "px");
                 domStyle.set(imgContainer, "left", (thumbnailBox.l + imagePadding) + "px");
                 domStyle.set(imgContainer, "top", (thumbnailBox.t + 44 + imagePadding) + "px");
                 domStyle.set(imgContainer, "overflow", "hidden");
-                var fullImgDim = domGeom.getMarginBox(imageElem);
+                fullImgDim = domGeom.getMarginBox(imageElem);
                 var imgRatio = fullImgDim.w / fullImgDim.h;
-                var thumbnailDimensions = domStyle.get(thumbnailView, "width");
                 if (fullImgDim.w > fullImgDim.h) {
                     domStyle.set(imageElem, "width", "auto");
                     domStyle.set(imageElem, "height", (thumbnailWidth) + "px");
-                    domStyle.set(imageElem, "margin-left", (-(imgRatio - 1) * thumbnailDimensions / 2) + "px");
+                    domStyle.set(imageElem, "margin-left", (-(imgRatio - 1) * thumbnailWidth / 2) + "px");
                 }
                 else {
                     domStyle.set(imageElem, "height", "auto");
                     domStyle.set(imageElem, "width", (thumbnailWidth) + "px");
-                    domStyle.set(imageElem, "margin-top", (-(1 / imgRatio - 1) * thumbnailDimensions / 2) + "px");
+                    domStyle.set(imageElem, "margin-top", (-(1 / imgRatio - 1) * thumbnailWidth / 2) + "px");
                 }
                 var divSize = domGeom.getMarginBox(overlay);
                 var dispRatio = divSize.w / divSize.h;
-                var animProps = {};
+                var containerProps = {};
+                var imageProps = {};
+                imageProps["margin-left"] = 0;
+                imageProps["margin-top"] = 0;
+                imageProps.left = 0;
+                imageProps.top = 0;
                 var buttonsHeight = domGeom.getMarginBox(closeButton).h;
                 // this if/else statement sets properties that center the image
                 if (imgRatio > dispRatio) {
-                    animProps.width = divSize.w;
-                    animProps.left = 0;
-                    animProps.top = (divSize.h - divSize.w / imgRatio) / 2;
-                    //domStyle.set(imgContainer, "height", "auto");
+                    containerProps.left = 0;
+                    containerProps.top = (divSize.h - divSize.w / imgRatio) / 2;
+                    imageProps.width = containerProps.width = divSize.w;
+                    imageProps.height = containerProps.height = (divSize.w / imgRatio);
                 }
                 else {
                     divSize.h -= buttonsHeight;
-                    animProps.height = divSize.h;
-                    animProps.top = buttonsHeight;
-                    animProps.left = (divSize.w - divSize.h * imgRatio) / 2;
-                    //domStyle.set(imgContainer, "width", "auto");
+                    containerProps.top = buttonsHeight;
+                    containerProps.left = (divSize.w - divSize.h * imgRatio) / 2;
+                    imageProps.height = containerProps.height = divSize.h;
+                    imageProps.width = containerProps.width = (divSize.h * imgRatio);
                 }
-                baseFx.animateProperty({
+                var overlayAnim = baseFx.animateProperty({
                     node: overlay,
                     properties: {opacity : 1},
                     duration: 500
                 }).play();
                 
-                baseFx.animateProperty({
+                var containerAnim = baseFx.animateProperty({
                     node: imgContainer,
-                    properties: animProps,
-                    duration: 500
-                }).play();*/
+                    properties: containerProps,
+                    duration: 500,
+                    delay: 200
+                }).play();
                 
-                domStyle.set(overlay, "display", "block");
+                var imageAnim = baseFx.animateProperty({
+                    node: imageElem,
+                    properties: imageProps,
+                    duration: 500,
+                    delay: 200
+                }).play();
+                
+                /*domStyle.set(overlay, "display", "block");
                 var fullImgDim = domGeom.getMarginBox(imageElem);
                 var imgRatio = fullImgDim.w / fullImgDim.h;
                 var divSize = domGeom.getMarginBox(overlay);
@@ -101,7 +113,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                     node: imageElem,
                     properties: animProps,
                     duration: 500
-                }).play();
+                }).play();*/
             });
             var likeButton = registry.byId("likeButton");
             likeButton.set('disabled', false);
@@ -119,7 +131,51 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
             });
             on(closeButton, "click", function() {
                 likeClick.remove();
-                var fadeAnim = baseFx.animateProperty({
+                
+                var containerProps = {};
+                containerProps.width = thumbnailWidth;
+                containerProps.height = thumbnailWidth;
+                containerProps.left = thumbnailBox.l + imagePadding;
+                containerProps.top = thumbnailBox.t + 44 + imagePadding;
+                
+                var imgRatio = fullImgDim.w / fullImgDim.h;
+                var imageProps = {};
+                if (fullImgDim.w > fullImgDim.h) {
+                    imageProps.width = imgRatio * thumbnailWidth;
+                    imageProps.height = thumbnailWidth;
+                    imageProps["margin-left"] = -(imgRatio - 1) * thumbnailWidth / 2;
+                }
+                else {
+                    imageProps.width = thumbnailWidth;
+                    imageProps.height = thumbnailWidth / imgRatio;
+                    imageProps["margin-top"] = -(1 / imgRatio - 1) * thumbnailWidth / 2;
+                }
+                
+                var overlayFade = baseFx.animateProperty({
+                    node: overlay,
+                    properties: {opacity: 0},
+                    duration: 500,
+                    delay: 300
+                }).play();
+                
+                var containerResize = baseFx.animateProperty({
+                    node: imgContainer,
+                    properties: containerProps,
+                    duration: 500
+                }).play();
+                
+                var imageResize = baseFx.animateProperty({
+                    node: imageElem,
+                    properties: imageProps,
+                    duration: 500
+                }).play();
+                
+                on(overlayFade, "End", function() {
+                    domConstruct.destroy(imageElem);
+                    domStyle.set(overlay, "display", "none");
+                });
+                
+                /*var fadeAnim = baseFx.animateProperty({
                     node: overlay,
                     properties: {opacity: 0},
                     duration: 500
@@ -132,7 +188,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                 on(fadeAnim, "End", function() {
                     domConstruct.destroy(imageElem);
                     domStyle.set(overlay, "display", "none");
-                });
+                });*/
             });
         },
         startup: function() {
