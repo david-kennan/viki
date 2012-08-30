@@ -20,6 +20,7 @@ img {
 #imageOverlay img {
     position: absolute;
     padding: 0;
+    cursor: default;
 }
 
 #imageOverlay input {

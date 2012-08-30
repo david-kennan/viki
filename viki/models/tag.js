@@ -5,5 +5,8 @@ var tagSchema = new mongoose.Schema({
     y: Integer,
     width: Integer,
     height: Integer,
-    link: String,
+    link: String
 });
+
+var Tag = mongoose.model('Tag', tagSchema);
+module.exports.Tag = Tag;

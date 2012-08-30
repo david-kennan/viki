@@ -1,5 +1,5 @@
-define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geometry", "dijit/registry", "dojox/mobile/ScrollableView", "dojox/mobile/ContentPane", "dojo/dom-construct", "dojo/dom-style", "dojo/_base/fx", "dojo/fx", "dojo/json", "dojo/on", "dojo/window", "dojo/request"],
-    function(declare, JsonRest, dom, domGeom, registry, ScrollableView, ContentPane, domConstruct, domStyle, baseFx, fx, JSON, on, win, request) {
+define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geometry", "dijit/registry", "dojox/mobile/ScrollableView", "dojox/mobile/ContentPane", "dojo/dom-construct", "dojo/dom-style", "dojo/_base/fx", "dojo/fx", "dojo/json", "dojo/on", "dojo/window", "dojo/request", "dojo/touch"],
+    function(declare, JsonRest, dom, domGeom, registry, ScrollableView, ContentPane, domConstruct, domStyle, baseFx, fx, JSON, on, win, request, touch) {
       return declare("viki.scrollableImageView", [ScrollableView], {
         // this is now the new widget context
         clickHandler: function(image) {
@@ -134,6 +134,48 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                 on(overlayFade, "End", function() {
                     domConstruct.destroy(imageElem);
                     domStyle.set(overlay, "display", "none");
+                });
+            });
+            var tagButton = registry.byId("tagButton");
+            on(tagButton, "click", function () {
+                tagButton.value = "Save Tag";
+                var tagDiv = domConstruct.create("div", {style: "width: 100px; height: 100px; border-style: solid; border-width: 3px; border-color: #ADD8E6; z-index: 1004; position: relative; cursor: pointer;"}, imgContainer);
+                var mousemoveHandler;
+                var mousePositionX;
+                var mousePositionY;
+                var divPos;
+                touch.press(tagDiv, function(event) {
+                    function touchMove(event) {
+                        event.preventDefault();
+                        divPos.y += event.pageY - mousePositionY;
+                        domStyle.set(tagDiv, "top", divPos.y + "px");
+                        mousePositionY = event.pageY;
+                        
+                        divPos.x += event.pageX - mousePositionX;
+                        domStyle.set(tagDiv, "left", divPos.x + "px");
+                        mousePositionX = event.pageX;
+                    }
+                    if (isAndroid) {
+                        tagDiv.addEventListener("touchmove", touchMove);
+                        mousemoveHandler = touchMove;
+                    }
+                    else {
+                        mousemoveHandler = touch.move(tagDiv, touchMove);
+                    }
+                    
+                    mousePositionX = event.pageX;
+                    mousePositionY = event.pageY;
+                    divPos = domGeom.position(tagDiv);
+                    divPos.x -= domGeom.position(imgContainer).x;
+                    divPos.y -= domGeom.position(imgContainer).y;
+                });
+                touch.release(tagDiv, function() {
+                    if (isAndroid) {
+                        tagDiv.removeEventListener("touchmove", mousemoveHandler);
+                    }
+                    else {
+                        mousemoveHandler.remove();
+                    }
                 });
             });
         },
