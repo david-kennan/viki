@@ -199,10 +199,12 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
           var imageStore = new JsonRest({target: this.source});
           
           this.getPage = function () {
+            debug.log("getPage called");
             var images = imageStore.query({type:'JSON', topic:'Outdoors', pageSize: numImages, pagesViewed:pagesDisplayed}).map(function(image) {
             var aElem = domConstruct.create("a", {cursor:'pointer'}, imageDiv);
             domConstruct.create("img", {src: '/image/get/' + image.thumbnailid, height: imageWidth, width: imageWidth, id: image.dataid, 
                                         onclick: function(){handler(this.id)}  }, aElem);
+            //debug.log("image retrieved...");
             return 0;
             });
             pagesDisplayed++;
@@ -232,7 +234,6 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
           var dh = dim.d.h;
           if (to.y < dh - ch) {
             this.getPage();
-            debug.log("bottom reached, got more content...")
           }
         }
         // end widget
