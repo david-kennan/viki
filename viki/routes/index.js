@@ -19,9 +19,14 @@ exports.upload = function(req, res) {
 };
 
 exports.uploadImage = function(req, res) {
-  if (req.files.filedata.length != 0) {
+  if(req.xhr) {
+    console.log("XHR Request Support Does Not Exist.");
+    res.writeHead(404);
+    res.end("Internal error");
+  }
+  if (req.files.qqfile.length != 0) {
     // Image processing
-    var path = req.files.filedata.path;
+    var path = req.files.qqfile.path;
     var util = require('util');
     var exec = require('child_process').exec;
     exec('file -b --mime-type ' + path, function(error, stdout, stderr) {
@@ -58,10 +63,9 @@ exports.uploadImage = function(req, res) {
                 var maxDimension = landscape ? value.width : value.height;
                 var minDimension = landscape ? value.height : value.width;
                 if (maxDimension < 100) {
-                  var newImg = new Image({name:req.body.imagename, dataid:origInfo._id, thumbnailid: null, dateCreated: new Date(), topic: 'Outdoors'});
+                  var newImg = new Image({name:req.param('imagename'), dataid:origInfo._id, thumbnailid: null, dateCreated: new Date(), topic: 'Outdoors'});
                   newImg.save();
-                  res.writeHead(200);
-                  res.end();
+                  res.send(JSON.stringify({success: true}), {'Content-Type': 'text/plain'}, 200);
                   return;
                 }
                 var resizeFactor = minDimension/thumbnailSize;
@@ -78,23 +82,22 @@ exports.uploadImage = function(req, res) {
                     var thumbImage = Buffer.concat(thumbArray);
                     grid.put(thumbImage, {metadata:{category:'image'}, content_type: 'image/jpeg'}, function(err, thumbInfo) {
                       if (err) console.log(err);
-                      Topic.find({name: req.body.imagetopic}, function(err, topics) {
+                      Topic.find({name: req.param('imagetopic')}, function(err, topics) {
                         var imageTopic;
                         if (topics.length > 1) {
-                          res.end(200, 'Error: there is more than one topic with name ' + req.body.imagetopic);
+                          res.end(200, 'Error: there is more than one topic with name ' + req.param('imagetopic'));
                           return;
                         }
                         else if (topics.length == 0) {
-                          imageTopic = new Topic({name:req.body.imagetopic, description: 'A description of this topic'});
+                          imageTopic = new Topic({name:req.param('imagetopic'), description: 'A description of this topic'});
                           imageTopic.save();
                         }
                         else {
                           imageTopic = topics[0];
                         }
-                      var newImg = new Image({name:req.body.imagename, dataid:origInfo._id, thumbnailid: thumbInfo._id, dateCreated: new Date(), topicid: imageTopic._id});
+                      var newImg = new Image({name:req.param('imagename'), dataid:origInfo._id, thumbnailid: thumbInfo._id, dateCreated: new Date(), topicid: imageTopic._id});
                       newImg.save();
-                      res.writeHead(200);
-                      res.end();
+                      res.send(JSON.stringify({success: true}), {'Content-Type': 'text/plain'}, 200);
                       });
                     });
                   });
@@ -120,8 +123,9 @@ exports.viewimages = function (req, res) {
       Topic.find({name: query.topic}, function (err, topics) {
         // for developement only //
         if (topics.length == 0) {
-          //var tmptopic = new Topic({name: 'Outdoors', description: 'Outdoor Images', category: 'Nature'});
-          //tmptopic.save();
+          var tmptopic = new Topic({name: 'Outdoors', description: 'Outdoor Images', category: 'Nature'});
+          tmptopic.save();
+          res.json({});
         }
         // delete after dev //
         else if (topics.length > 1) {

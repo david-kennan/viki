@@ -1,22 +1,20 @@
-link(rel="stylesheet", href="/scripts/dojox/form/resources/UploaderFileList.css")
 link(rel="stylesheet", href="/stylesheets/uploadCustom.css")
 script(type="text/javascript", src="/scripts/upload.js")
-// ucustom overrides the upload button theme to align it with the mobile theme
+script(type="text/javascript", src="/scripts/fileuploader.js")
 if !isIOS
   div.ucustom
-    p
+    p Upload A New Image:
     form(id="uploadForm", name="uploadform", action="/image/upload", method="post", enctype="multipart/form-data")
-      // todo: detect ios & don't render
-      label(for="imagename") Image Name:&nbsp;
-      input(type="text", name="imagename", data-dojo-type="dojox.mobile.TextBox")
+      label(for="imagename") Gist:&nbsp;
+      input#gist(type="text", name="imagename", data-dojo-type="dojox.mobile.TextBox")
       p
-      label(for="imagetopic") Image Topic:&nbsp;
-      input(type="text", name="imagetopic", value="Outdoors", data-dojo-type="dojox.mobile.TextBox")
+      label(for="imagetopic") Topic:&nbsp;
+      input#topic(type="text", name="imagetopic", value="Outdoors", data-dojo-type="dojox.mobile.TextBox")
       p
-      label(for="filedata") Image File:&nbsp;
-      input(type="file", name="filedata", id="file", data-dojo-type="dojox.form.Uploader", class="mblButton paddedB", label="Choose a file...")
-      div(id="files", data-dojo-type="dojox.form.uploader.FileList", uploaderId="file", data-dojo-props="headerIndex: ''")
-      p
-      input(type="submit", value="Upload File", data-dojo-type="dojox.mobile.Button")
+      div#fileuploader(data-dojo-type="dojox.mobile.Button", class="customButton") 
+      div#filelist(data-dojo-type="dojox.mobile.RoundRectList", class="customList")
+        div#placeholder(data-dojo-type="dojox.mobile.ListItem") No Files Selected
+      p  
+      input#submit(type="button", value="Add Image to Viki", data-dojo-type="dojox.mobile.Button")
 else 
   p Sorry, iOS currently does not support browser-based file uploads; please upgrade to iOS 6 when it comes out...
