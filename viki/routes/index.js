@@ -4,7 +4,7 @@ var Image = mongoose.model('Image', require('../models/image.js'));
 var Topic = mongoose.model('Topic', require('../models/topic.js'));
 var Fs = require('fs');
 var Grid = mongo.Grid;
-var thumbnailSize = 100;  // H x W dimension in pixels; note: this also must be changed in index.jade.  now it is hardcoded.  fix this
+var thumbnailSize = 200;  // H x W dimension in pixels; note: this also must be changed in index.jade.  now it is hardcoded.  fix this
 
 // be sure to set dev false after development is complete
 exports.index = function(req, res){
