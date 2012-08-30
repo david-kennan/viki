@@ -11,7 +11,8 @@ exports.index = function(req, res){
   // detect iOS and disable upload for now, will add back one supported in iOS
   var ua = req.headers['user-agent'];
   var isIOS = /iPad/i.test(ua) || /iPhone/i.test(ua);
-  res.render('index', { appname: 'Visual Wiki', dev: true, isIOS: isIOS });
+  var isAndroid = /Android/i.test(ua);
+  res.render('index', { appname: 'Visual Wiki', dev: true, isIOS: isIOS, isAndroid: isAndroid });
 };
 
 exports.upload = function(req, res) {
