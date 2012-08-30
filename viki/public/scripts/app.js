@@ -11,7 +11,7 @@ debug.log = function(message) {
 // end debugger
 
 // the main code, loaded with the app
-require(["dojox/mobile/parser", "dojox/mobile/deviceTheme", "dojox/mobile/ScrollableView", "dojox/mobile/TabBar", "dojox/mobile/ContentPane", "dojox/mobile/compat", "dojox/mobile", "dojox/mobile/Button", "dojox/mobile/TextBox", "custom/scrollableImageView" ], 
+require(["dojox/mobile/parser", "dojox/mobile/deviceTheme", "dojox/mobile/ScrollableView", "dojox/mobile/TabBar", "dojox/mobile/ContentPane", "dojox/mobile/compat", "dojox/mobile", "dojox/mobile/Button", "dojox/mobile/TextBox", "custom/scrollableImageView", "dijit/form/Form"], 
     function(mobileParser, deviceTheme) {
       mobileParser.parse();
       debug.log("loaded dojo etal...");

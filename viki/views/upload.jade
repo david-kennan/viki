@@ -1,10 +1,10 @@
-link(rel="stylesheet", href="/stylesheets/uploadCustom.css")
-script(type="text/javascript", src="/scripts/upload.js")
-script(type="text/javascript", src="/scripts/fileuploader.js")
 if !isIOS
+  link(rel="stylesheet", href="/stylesheets/uploadCustom.css")
+  script(type="text/javascript", src="/scripts/upload.js")
+  script(type="text/javascript", src="/scripts/fileuploader.js")
   div.ucustom
     p Upload A New Image:
-    form(id="uploadForm", name="uploadform", action="/image/upload", method="post", enctype="multipart/form-data")
+    form(id="uploadForm", name="uploadform", action="/image/upload", method="post", enctype="multipart/form-data", data-dojo-type="dijit/form/Form")
       label(for="imagename") Gist:&nbsp;
       input#gist(type="text", name="imagename", data-dojo-type="dojox.mobile.TextBox")
       p
