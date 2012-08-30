@@ -117,7 +117,7 @@ exports.viewimages = function (req, res) {
         if (topics.length == 0) {
           var tmptopic = new Topic({name: 'Outdoors', description: 'Outdoor Images', category: 'Nature'});
           tmptopic.save();
-          res.json(200, '{}');
+          res.json(200, {});
         }
         // delete after dev //
         else if (topics.length > 1) {
