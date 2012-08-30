@@ -119,8 +119,9 @@ exports.viewimages = function (req, res) {
       Topic.find({name: query.topic}, function (err, topics) {
         // for developement only //
         if (topics.length == 0) {
-          //var tmptopic = new Topic({name: 'Outdoors', description: 'Outdoor Images', category: 'Nature'});
-          //tmptopic.save();
+          var tmptopic = new Topic({name: 'Outdoors', description: 'Outdoor Images', category: 'Nature'});
+          tmptopic.save();
+          res.json(200, {});
         }
         // delete after dev //
         else if (topics.length > 1) {
@@ -128,7 +129,7 @@ exports.viewimages = function (req, res) {
           res.end('Error: more than one topic with name ' + req.query.topic + ' found');
         }
         else {
-          Image.find({topicid: topics[0]._id}, {}, {skip:query.pageSize * query.pagesViewed, limit:query.pageSize}, function (err, images) {
+          Image.find({topicid: topics[0]._id}, {}, {skip:query.pageSize * query.pagesViewed, limit:query.pageSize}).sort('-votes').exec(function (err, images) {
             res.json(200, images);
           });
         }
@@ -157,4 +158,23 @@ exports.getImage = function (req, res) {
     res.writeHead(200, {'content-type':'image/jpeg'});
     res.end(data, 'binary');
   });
+};
+
+exports.likeImage = function (req, res) {
+    var id = req.params.imageID;
+    var image = Image.find({dataid: id}, function(err, images) {
+        if (images.length == 0) {
+            res.writeHead(200);
+            res.end('error: no images with id ' + id + ' found when like clicked.');
+        }
+        else if (images.length > 1) {
+            res.writeHead(200);
+            res.end('error: more than one image  with id ' + id + ' found when like clicked.');
+        }
+        else {
+            images[0].like();
+            res.writeHead(200);
+            res.end("Sucess: now image's votes are " + images[0].votes + "\n");
+        }
+    });
 };
