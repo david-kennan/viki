@@ -4,7 +4,7 @@ if !isIOS
   script(type="text/javascript", src="/scripts/fileuploader.js")
   div.ucustom
     p Upload A New Image:
-    form(id="uploadForm", name="uploadform", action="/image/upload", method="post", enctype="multipart/form-data", data-dojo-type="dijit/form/Form")
+    form(id="uploadForm", name="uploadform", action="/image/upload", method="post", enctype="multipart/form-data")
       label(for="imagename") Gist:&nbsp;
       input#gist(type="text", name="imagename", data-dojo-type="dojox.mobile.TextBox")
       p
