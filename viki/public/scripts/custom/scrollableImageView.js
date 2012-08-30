@@ -160,9 +160,11 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                     if (isAndroid) {
                         tagDiv.addEventListener("touchmove", touchMove);
                         mousemoveHandler = touchMove;
+                        console.log('if statement reached');
                     }
                     else {
                         mousemoveHandler = touch.move(tagDiv, touchMove);
+                        console.log('else statement reached');
                     }
                     
                     mousePositionX = event.pageX;
@@ -178,6 +180,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                     else {
                         mousemoveHandler.remove();
                     }
+                    console.log('touch ended');
                 });
             });
         },
