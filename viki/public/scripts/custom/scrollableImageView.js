@@ -99,6 +99,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
             likeButton.set('disabled', false);
             var likeHandler = on(likeButton, "click", function() {
                 console.log("likeButton clicked");
+                domAttr.set("likeButton", "src", "/images/liked.png");
                 request("/image/like/" + image).then(
                     function(text) {
                         console.log(text);
@@ -133,7 +134,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                     }}).then(function(response) {
                         console.log(response);
                     });
-                    domAttr.set("tagButton", "value", "Tag");
+                    domAttr.set("tagButton", "src", "/images/tag.png");
                     touchDnEvent.remove();
                     touchUpEvent.remove();
                     domStyle.set(tagDiv, "cursor", "default");
@@ -141,7 +142,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                 }
                 else {
                     domStyle.set(cancelButton, "display", "inline-block");
-                    domAttr.set("tagButton", "value", "Save");
+                    domAttr.set("tagButton", "src", "/images/save.png");
                     tagDiv = domConstruct.create("div", {style: "position: relative; cursor: pointer; width: 100px; height: 100px;"}, imgContainer);
                     
                     var mouseTagX;
@@ -189,12 +190,13 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                 }
             });
             var tagCancelHandler = on(registry.byId("cancelTag"), "click", function() {
-                domAttr.set("tagButton", "value", "Tag");
+                domAttr.set("tagButton", "src", "/images/tag.png");
                 domStyle.set(cancelButton, "display", "none");
                 domConstruct.destroy(tagDiv);
                 tagActive = false;
             });
             var closeHandler = on(closeButton, "click", function() {
+                domAttr.set("likeButton", "src", "/images/like.png");
                 domStyle.set(cancelButton, "display", "none");
                 likeHandler.remove();
                 tagHandler.remove();
@@ -249,7 +251,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                         properties: {opacity: 0, width: 0, height: 0},
                         duration: 300
                     }).play();
-                    domAttr.set("tagButton", "value", "Tag");
+                    domAttr.set("tagButton", "src", "/images/tag.png");
                     tagActive = false;
                 }
             });

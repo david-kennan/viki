@@ -18,6 +18,16 @@ img {
 }
 
 #imageOverlay img {
+    position: static;
+    height: 35px;
+    margin-left: 5px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    z-index: 1002;
+    
+}
+
+#imageOverlay #imageContainer img {
     position: absolute;
     padding: 0;
     cursor: default;
