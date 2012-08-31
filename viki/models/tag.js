@@ -1,11 +1,12 @@
 var mongoose = require('mongoose');
 
 var tagSchema = new mongoose.Schema({
-    x: Integer,
-    y: Integer,
-    width: Integer,
-    height: Integer,
-    link: String
+    x: Number,
+    y: Number,
+    width: Number,
+    height: Number,
+    imageId: String,
+    topicId: String
 });
 
 var Tag = mongoose.model('Tag', tagSchema);

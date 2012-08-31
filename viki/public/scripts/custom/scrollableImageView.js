@@ -1,5 +1,5 @@
-define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geometry", "dijit/registry", "dojox/mobile/ScrollableView", "dojox/mobile/ContentPane", "dojo/dom-construct", "dojo/dom-style", "dojo/_base/fx", "dojo/fx", "dojo/json", "dojo/on", "dojo/window", "dojo/request", "dojo/touch"],
-    function(declare, JsonRest, dom, domGeom, registry, ScrollableView, ContentPane, domConstruct, domStyle, baseFx, fx, JSON, on, win, request, touch) {
+define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geometry", "dijit/registry", "dojox/mobile/ScrollableView", "dojox/mobile/ContentPane", "dojo/dom-construct", "dojo/dom-style", "dojo/dom-attr", "dojo/_base/fx", "dojo/fx", "dojo/json", "dojo/on", "dojo/window", "dojo/request", "dojo/touch"],
+    function(declare, JsonRest, dom, domGeom, registry, ScrollableView, ContentPane, domConstruct, domStyle, domAttr, baseFx, fx, JSON, on, win, request, touch) {
       return declare("viki.scrollableImageView", [ScrollableView], {
         // this is now the new widget context
         
@@ -80,7 +80,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
             });
             var likeButton = registry.byId("likeButton");
             likeButton.set('disabled', false);
-            var likeClick = on(likeButton, "click", function() {
+            var likeHandler = on(likeButton, "click", function() {
                 console.log("likeButton clicked");
                 request("/image/like/" + image).then(
                     function(text) {
@@ -92,8 +92,88 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                     }
                 );
             });
-            on(closeButton, "click", function() {
-                likeClick.remove();
+            var tagButton = registry.byId("tagButton");
+            var tagActive = false;
+            var tagDiv;
+            var tagBorder = 3;
+            var tagX;
+            var tagY;
+            var tagPos;
+            var touchDnEvent;
+            var touchUpEvent;
+            var tagHandler = on(tagButton, "click", function () {
+                var imagePos = domGeom.position(imgContainer);
+                if (tagActive) {
+                    request.post("/image/tag/" + image, {data: {
+                        x: tagX / imagePos.w, // left side of left border, as fraction of image width
+                        y: tagY / imagePos.h, // same
+                        width: (tagPos.w - 2 * tagBorder) / imagePos.w, // also as fraction of image dimensions
+                        height: (tagPos.h - 2 * tagBorder) / imagePos.h,
+                        topic: "Outdoors"
+                    }}).then(function(response) {
+                        console.log(response);
+                    });
+                    domAttr.set("tagButton", "value", "Tag");
+                    touchDnEvent.remove();
+                    touchUpEvent.remove();
+                    domStyle.set(tagDiv, "cursor", "default");
+                    domStyle.set(tagDiv, "position", "absolute");
+                    //domStyle.set(tagDiv, "left", tagX + "px");
+                    //domStyle.set(tagDiv, "top", tagY + "px");
+                }
+                else {
+                    domAttr.set("tagButton", "value", "Save Tag");
+                    tagDiv = domConstruct.create("div", {style: "width: 100px; height: 100px; border-style: solid; border-width: " + tagBorder + "px; border-color: #ADD8E6; z-index: 1004; position: relative; cursor: pointer;"}, imgContainer);
+                    
+                    var mouseTagX;
+                    var mouseTagY;
+                    var mousemoveHandler;
+                    function touchRelease() {
+                        if (isAndroid) {
+                            tagDiv.removeEventListener("touchmove", mousemoveHandler);
+                        }
+                        else {
+                            mousemoveHandler.remove();
+                        }
+                    }
+                    touchDnEvent = touch.press(tagDiv, function(event) {
+                        tagPos = domGeom.position(tagDiv);
+                        mouseTagX = event.pageX - tagPos.x;
+                        mouseTagY = event.pageY - tagPos.y;
+                        function touchMove(event) {
+                            var mousePositionX = event.pageX - imagePos.x;
+                            tagX = mousePositionX - mouseTagX;
+                            var mousePositionY = event.pageY - imagePos.y;
+                            tagY = mousePositionY - mouseTagY;
+                            if (tagX >= 0 && tagX <= imagePos.w - tagPos.w)
+                                domStyle.set(tagDiv, "left", tagX + "px");
+                            if (tagY >= 0 && tagY <= imagePos.h - tagPos.h)
+                                domStyle.set(tagDiv, "top", tagY + "px");
+                            if (mousePositionX < 5 || mousePositionX > imagePos.w - 5 || mousePositionY < 5 || mousePositionY > imagePos.h - 5)
+                                touchRelease();
+                        }
+                        if (isAndroid) {
+                            mousemoveHandler = function (event) {
+                                event.preventDefault();
+                                touchMove(event.targetTouches[0]);
+                            };
+                            tagDiv.addEventListener("touchmove", mousemoveHandler);
+                        }
+                        else {
+                            mousemoveHandler = touch.move(tagDiv, function (event) {
+                                event.preventDefault();
+                                touchMove(event);
+                            });
+                        }
+                    });
+                    touchUpEvent = touch.release(tagDiv, touchRelease);
+                }
+                tagActive = !tagActive;
+            });
+            var closeHandler = on(closeButton, "click", function() {
+                likeHandler.remove();
+                tagHandler.remove();
+                closeHandler.remove();
                 
                 var containerProps = {};
                 containerProps.width = thumbnailWidth;
@@ -134,54 +214,20 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                 }).play();
                 
                 on(overlayFade, "End", function() {
-                    domConstruct.destroy(imageElem);
+                    //domConstruct.destroy(imageElem);
+                    domConstruct.empty(imgContainer);
                     domStyle.set(overlay, "display", "none");
                 });
-            });
-            var tagButton = registry.byId("tagButton");
-            on(tagButton, "click", function () {
-                tagButton.value = "Save Tag";
-                var tagDiv = domConstruct.create("div", {style: "width: 100px; height: 100px; border-style: solid; border-width: 3px; border-color: #ADD8E6; z-index: 1004; position: relative; cursor: pointer;"}, imgContainer);
-                var mousemoveHandler;
-                var mousePositionX;
-                var mousePositionY;
-                var divPos;
-                touch.press(tagDiv, function(event) {
-                    function touchMove(event) {
-                        event.preventDefault();
-                        divPos.y += event.pageY - mousePositionY;
-                        domStyle.set(tagDiv, "top", divPos.y + "px");
-                        mousePositionY = event.pageY;
-                        
-                        divPos.x += event.pageX - mousePositionX;
-                        domStyle.set(tagDiv, "left", divPos.x + "px");
-                        mousePositionX = event.pageX;
-                    }
-                    if (isAndroid) {
-                        tagDiv.addEventListener("touchmove", touchMove);
-                        mousemoveHandler = touchMove;
-                        console.log('if statement reached');
-                    }
-                    else {
-                        mousemoveHandler = touch.move(tagDiv, touchMove);
-                        console.log('else statement reached');
-                    }
-                    
-                    mousePositionX = event.pageX;
-                    mousePositionY = event.pageY;
-                    divPos = domGeom.position(tagDiv);
-                    divPos.x -= domGeom.position(imgContainer).x;
-                    divPos.y -= domGeom.position(imgContainer).y;
-                });
-                touch.release(tagDiv, function() {
-                    if (isAndroid) {
-                        tagDiv.removeEventListener("touchmove", mousemoveHandler);
-                    }
-                    else {
-                        mousemoveHandler.remove();
-                    }
-                    console.log('touch ended');
-                });
+                
+                if (tagActive) {
+                    var tagFade = baseFx.animateProperty({
+                        node: tagDiv,
+                        properties: {opacity: 0, width: 0, height: 0},
+                        duration: 300
+                    }).play();
+                    domAttr.set("tagButton", "value", "Tag");
+                    tagActive = false;
+                }
             });
         },
         // this is called when the view if first created - setup and such

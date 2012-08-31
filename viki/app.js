@@ -49,6 +49,7 @@ app.get('/image/view/all', routes.viewimages);    // view images
 app.get('/image/get/:imageID', routes.getImage);  // get a specific image
 app.post('/image/upload', routes.uploadImage);    // upload an image
 app.get('/image/like/:imageID', routes.likeImage);// like an image
+app.post('/image/tag/:imageID', routes.tagImage); // tag an image
 
 // listen
 http.createServer(app).listen(app.get('port'), function(){

@@ -2,6 +2,7 @@ var mongo = require('mongodb');
 var mongoose = require('mongoose');
 var Image = mongoose.model('Image', require('../models/image.js'));
 var Topic = mongoose.model('Topic', require('../models/topic.js'));
+var Tag = mongoose.model('Tag', require('../models/tag.js'));
 var Fs = require('fs');
 var Grid = mongo.Grid;
 var thumbnailSize = 200;  // H x W dimension in pixels; note: this also must be changed in index.jade.  now it is hardcoded.  fix this
@@ -163,7 +164,7 @@ exports.getImage = function (req, res) {
 
 exports.likeImage = function (req, res) {
     var id = req.params.imageID;
-    var image = Image.find({dataid: id}, function(err, images) {
+    Image.find({dataid: id}, function(err, images) {
         if (images.length == 0) {
             res.writeHead(200);
             res.end('error: no images with id ' + id + ' found when like clicked.');
@@ -176,6 +177,38 @@ exports.likeImage = function (req, res) {
             images[0].like();
             res.writeHead(200);
             res.end("Sucess: now image's votes are " + images[0].votes + "\n");
+        }
+    });
+};
+
+exports.tagImage = function (req, res) {
+    var id = req.params.imageID;
+    Image.find({dataid: id}, function (err, images) {
+        if (images.length == 0) {
+            res.writeHead(200);
+            res.end("Error, no images found");
+        }
+        else if (images.length > 1) {
+            res.writeHead(200);
+            res.end("Error, multiple images found");
+        }
+        else {
+            Topic.find({name: req.body.topic}, function(err, topics) {
+                if (topics.length == 0) {
+                    res.writeHead(200);
+                    res.end("Error: no topics found");
+                }
+                else if (topics.length > 1) {
+                    res.writeHead(200);
+                    res.end("Error: multiple topics found");
+                }
+                else {
+                    var tag = new Tag({x: req.body.x, y: req.body.y, width: req.body.width, height: req.body.height, imageId: images[0]._id, topicId: topics[0]._id});
+                    tag.save();
+                    res.writeHead(200);
+                    res.end("Success: tag created");
+                }
+            });
         }
     });
 };

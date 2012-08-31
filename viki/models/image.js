@@ -5,7 +5,7 @@ var imageSchema = new mongoose.Schema({
     thumbnailid: String,
     name: String,
     dateCreated: Date,
-    topicid: String,
+    topicid: String, // should be a list
     votes: Number
 });
 
