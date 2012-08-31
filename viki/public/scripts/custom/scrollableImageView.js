@@ -235,31 +235,48 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
           var handler = this.clickHandler;
           var imgDispInfo = this.numVisibleImages();
           var numImages = imgDispInfo.number * 2;  // get two pages at a time
-          var pagesDisplayed = 0;
+          var itemsDisplayed = 0;
           var imageDiv = dom.byId(this.containerNode); // this inserts elements directly into the pane
           this.addChild(new ContentPane({href: this.source}));
-
           var imageWidth = imgDispInfo.imageDim - 6;
-
           var imageStore = new JsonRest({target: this.source});
-          
+          var firstimeIns = true;
+          var firstimeHint = true;
+          var firstimeAdd = true;
+
           this.getPage = function () {
             debug.log("getPage called");
-            var images = imageStore.query({type:'JSON', topic:'Outdoors', pageSize: numImages, pagesViewed:pagesDisplayed}).map(function(image) {
+            var images = imageStore.query({type:'JSON', topic:'Outdoors', pageSize: numImages, itemsViewed:itemsDisplayed}).map(function(image) {
+            if (firstimeIns) {
+              imageDiv.innerHTML = "";
+              firstimeIns = false;
+            }
             var aElem = domConstruct.create("a", {cursor:'pointer'}, imageDiv);
             domConstruct.create("img", {src: '/image/get/' + image.thumbnailid, height: imageWidth, width: imageWidth, id: image.dataid, 
                                         onclick: function(){handler(this.id)}  }, aElem);
-            //debug.log("image retrieved...");
+            if (firstimeAdd && !firstimeHint) {
+              domConstruct.destroy('bottomInfo');
+              firstimeAdd = false;
+            }
             return 0;
             });
-            pagesDisplayed++;
+            images.then(function(d) {
+              if (firstimeHint) {
+                domConstruct.place("<center><div id='bottomInfo'>Hint: Pull up to retrieve more images</div></center>", 
+                                   registry.byId('viewimages').containerNode , "last");
+                firstimeHint = false;
+              }
+              itemsDisplayed += d.length;
+              debug.log("retrieved " + d.length + " images");
+            });
             return images;
           }
 
           // get the first set of images, showing a message if there are no images
           this.getPage().then(function(d){
             if (!d.length) {
-              imageDiv.innerHTML = "There are no images in " + appName + ", use the upload tab to add images.";
+              imageDiv.innerHTML = "There are no images in " + appName + ", use the upload tab to add images," + 
+                                    "or pull up on the arrow to get new content.<p><center><img src='/images/upArrow.png'></center>";
             }
           });
 
