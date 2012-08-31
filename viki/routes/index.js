@@ -212,3 +212,23 @@ exports.tagImage = function (req, res) {
         }
     });
 };
+
+
+exports.getTags = function (req, res) {
+    var id = req.params.imageID;
+    Image.find({dataid: id}, function (err, images) {
+        if (images.length == 0) {
+            res.writeHead(200);
+            res.end("error: no images found with dataid " + id);
+        }
+        else if (images.length > 1) {
+            res.writeHead(200);
+            res.end("Error: multiple images found with dataid " + id);
+        }
+        else {
+            Tag.find({imageId: images[0]._id}, function(err, tags) {
+                res.json(200,  tags);
+            });
+        }
+    });
+};

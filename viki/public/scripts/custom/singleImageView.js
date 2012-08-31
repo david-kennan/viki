@@ -1,4 +1,5 @@
 // I tried to use this by requiring "custom/singleImageView" and "viki/singleImageView," but neither of these worked.  I think we have to somehow include it in the loader.
+// I now see how to do this.  Something like require(["public/scripts/custom/singleImageView.js"] ..., then create new instance of the class
 
 define(["dojo/_base/declare", "dojo/dom", "dojo/dom-geometry", "dojo/dom-construct", "dijit/_WidgetBase", "dojo/dom-style", "dojo/query"], function(declare, dom, domGeom, domConstruct, _WidgetBase, domStyle, query) {
     return declare("viki.singleImageView", null, {

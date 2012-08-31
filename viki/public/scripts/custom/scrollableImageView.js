@@ -1,5 +1,5 @@
-define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geometry", "dijit/registry", "dojox/mobile/ScrollableView", "dojox/mobile/ContentPane", "dojo/dom-construct", "dojo/dom-style", "dojo/dom-attr", "dojo/_base/fx", "dojo/fx", "dojo/json", "dojo/on", "dojo/window", "dojo/request", "dojo/touch", "dojo/hash"],
-    function(declare, JsonRest, dom, domGeom, registry, ScrollableView, ContentPane, domConstruct, domStyle, domAttr, baseFx, fx, JSON, on, win, request, touch, hash) {
+define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geometry", "dijit/registry", "dojox/mobile/ScrollableView", "dojox/mobile/ContentPane", "dojo/dom-construct", "dojo/dom-style", "dojo/dom-attr", "dojo/_base/fx", "dojo/fx", "dojo/json", "dojo/on", "dojo/window", "dojo/request", "dojo/touch", "dojo/hash", "dojo/_base/array"],
+    function(declare, JsonRest, dom, domGeom, registry, ScrollableView, ContentPane, domConstruct, domStyle, domAttr, baseFx, fx, JSON, on, win, request, touch, hash, array) {
       return declare("viki.scrollableImageView", [ScrollableView], {
         // this is now the new widget context
         
@@ -58,6 +58,23 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                     imageProps.height = containerProps.height = divSize.h;
                     imageProps.width = containerProps.width = (divSize.h * imgRatio);
                 }
+                
+                
+                // Get tags for this image
+                request('/image/tag/' + image).then(function(tags) {
+                    var tagArray = JSON.parse(tags);
+                    array.forEach(tagArray, function(item, index) {
+                        // The following properties are stored as fractions of the image's width and height
+                        var tagLeft = item.x * imageProps.height;
+                        //console.log(tagLeft);
+                        var tagTop = item.y * imageProps.height;
+                        var tagWidth = item.width * imageProps.width;
+                        var tagHeight = item.height * imageProps.height;
+                        var styleString = 
+                        domConstruct.create("div", {style: ("left:" + tagLeft + "px; top:" + tagTop + "px; width:" + tagWidth + "px; height:" + tagHeight + "px")}, imageContainer);
+                    });
+                });
+                
                 var overlayAnim = baseFx.animateProperty({
                     node: overlay,
                     properties: {opacity : 1},
@@ -93,9 +110,10 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                 );
             });
             var tagButton = registry.byId("tagButton");
+            var cancelButton = dom.byId("cancelTag");
             var tagActive = false;
             var tagDiv;
-            var tagBorder = 3;
+            var tagBorder = 3; // this is also hardcoded in style.css - don't forget to change it there
             var tagX;
             var tagY;
             var tagPos;
@@ -103,7 +121,9 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
             var touchUpEvent;
             var tagHandler = on(tagButton, "click", function () {
                 var imagePos = domGeom.position(imgContainer);
-                if (tagActive) {
+                tagActive = !tagActive;
+                if (!tagActive) {
+                    domStyle.set(cancelButton, "display", "none");
                     request.post("/image/tag/" + image, {data: {
                         x: tagX / imagePos.w, // left side of left border, as fraction of image width
                         y: tagY / imagePos.h, // same
@@ -118,12 +138,11 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                     touchUpEvent.remove();
                     domStyle.set(tagDiv, "cursor", "default");
                     domStyle.set(tagDiv, "position", "absolute");
-                    //domStyle.set(tagDiv, "left", tagX + "px");
-                    //domStyle.set(tagDiv, "top", tagY + "px");
                 }
                 else {
-                    domAttr.set("tagButton", "value", "Save Tag");
-                    tagDiv = domConstruct.create("div", {style: "width: 100px; height: 100px; border-style: solid; border-width: " + tagBorder + "px; border-color: #ADD8E6; z-index: 1004; position: relative; cursor: pointer;"}, imgContainer);
+                    domStyle.set(cancelButton, "display", "inline-block");
+                    domAttr.set("tagButton", "value", "Save");
+                    tagDiv = domConstruct.create("div", {style: "position: relative; cursor: pointer; width: 100px; height: 100px;"}, imgContainer);
                     
                     var mouseTagX;
                     var mouseTagY;
@@ -168,9 +187,15 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                     });
                     touchUpEvent = touch.release(tagDiv, touchRelease);
                 }
-                tagActive = !tagActive;
+            });
+            var tagCancelHandler = on(registry.byId("cancelTag"), "click", function() {
+                domAttr.set("tagButton", "value", "Tag");
+                domStyle.set(cancelButton, "display", "none");
+                domConstruct.destroy(tagDiv);
+                tagActive = false;
             });
             var closeHandler = on(closeButton, "click", function() {
+                domStyle.set(cancelButton, "display", "none");
                 likeHandler.remove();
                 tagHandler.remove();
                 closeHandler.remove();

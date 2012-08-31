@@ -13,8 +13,9 @@ block content
     include upload
   div#viewimages(data-dojo-type="viki.scrollableImageView", data-dojo-props="selected: false, source: '/image/view/all'")
   div#imageOverlay(class='loadingOverlay pageOverlay')
-    input#closeButton(type="button", data-dojo-type="dojox.mobile.Button", value="Close", class='imgButton')
-    input#likeButton(type="button", data-dojo-type="dojox.mobile.Button", value="Like", class='imgButton')
-    input(type="button", data-dojo-type="dojox.mobile.Button", value="Share", class='imgButton')
-    input#tagButton(type="button", data-dojo-type="dojox.mobile.Button", value="Tag", class='imgButton')
+    input#closeButton(type="button", data-dojo-type="dojox.mobile.Button", value="Close")
+    input#likeButton(type="button", data-dojo-type="dojox.mobile.Button", value="Like")
+    //input(type="button", data-dojo-type="dojox.mobile.Button", value="Share")
+    input#tagButton(type="button", data-dojo-type="dojox.mobile.Button", value="Tag")
+    input#cancelTag(type="button", data-dojo-type="dojox.mobile.Button", value="Cancel", style="display:none")
     div#imageContainer(style="position: absolute")
