@@ -279,14 +279,14 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
             var aElem = domConstruct.create("a", {cursor:'pointer'}, imageDiv);
             domConstruct.create("img", {src: '/image/get/' + image.thumbnailid, height: imageWidth, width: imageWidth, id: image.dataid, 
                                         onclick: function(){handler(this.id)}  }, aElem);
-            if (firstimeAdd && !firstimeHint) {
+            if (firstimeAdd && !firstimeHint ) {
               domConstruct.destroy('bottomInfo');
               firstimeAdd = false;
             }
             return 0;
             });
             images.then(function(d) {
-              if (firstimeHint) {
+              if (firstimeHint && d.length) {
                 domConstruct.place("<center><div id='bottomInfo'>Hint: Pull up to retrieve more images</div></center>", 
                                    registry.byId('viewimages').containerNode , "last");
                 firstimeHint = false;
@@ -302,6 +302,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
             if (!d.length) {
               imageDiv.innerHTML = "There are no images in " + appName + ", use the upload tab to add images," + 
                                     "or pull up on the arrow to get new content.<p><center><img src='/images/upArrow.png'></center>";
+            firstimeHint = true;
             }
           });
 
