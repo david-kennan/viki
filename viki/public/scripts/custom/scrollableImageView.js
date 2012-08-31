@@ -289,9 +289,15 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
             });
             images.then(function(d) {
               if (firstimeHint && d.length) {
-                domConstruct.place("<div id='bottomInfo'><center>Hint: Pull up to retrieve more images</center></div>", 
+                domConstruct.place("<div id='bottomInfo'><center>Hint: Pull up to retrieve more images.</center></div>", 
                                    registry.byId('viewimages').containerNode , "last");
                 firstimeHint = false;
+              }
+              else if (!firstimeHint && !d.length && !firstimeIns && !dom.byId('bottomInfo')) {
+                domConstruct.place("<div id='bottomInfo'><center>No more images, check back later.</center></div>", 
+                                   registry.byId('viewimages').containerNode , "last");
+              } else if (!firstimeHint && d.length && !firstimeIns && dom.byId('bottomInfo')) {
+                domConstruct.destroy('bottomInfo');
               }
               itemsDisplayed += d.length;
               debug.log("retrieved " + d.length + " images");
@@ -313,7 +319,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
           //this.singleImageView = new singleImageView({overlayID: "imageOverlay"});
         },
         numVisibleImages: function() {
-          var dims = domGeom.getContentBox(dom.byId(hash()));
+          var dims = win.getBox();
           var imagesWide = Math.floor(dims.w / 106);
           var imagesHigh = Math.floor(dims.h / 106);
           return {number: imagesWide * imagesHigh, imageDim: dims.w / imagesWide};
