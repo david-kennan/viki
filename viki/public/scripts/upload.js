@@ -1,6 +1,6 @@
 // upload view js file
-require(["dojox/mobile/parser", "dojo/dom", "dijit/registry", "dojo/dom-construct", "dojo/ready", "dojox/validate/_base"],
-    function(parser, dom, registry, construct, ready, validate) {
+require(["dojox/mobile/parser", "dojo/dom", "dijit/registry", "dojo/dom-construct", "dojo/ready", "dojox/validate/_base", "dojo/hash"],
+    function(parser, dom, registry, construct, ready, validate, hash) {
       debug.log("loaded upload.js...");
       var uploader;
       var form;
@@ -23,7 +23,7 @@ require(["dojox/mobile/parser", "dojo/dom", "dijit/registry", "dojo/dom-construc
         }
       }
 
-      // once a file has been uploaded, reset the uploader to it can be used again
+      // once a file has been uploaded, reset the uploader so it can be used again
       var resetUploader = function () {
         uploader = newUploader();
       }
@@ -39,6 +39,10 @@ require(["dojox/mobile/parser", "dojo/dom", "dijit/registry", "dojo/dom-construc
             construct.destroy(dom.byId("placeholder"));
             registry.byId('submit').set('value', 'File Uploaded Successfully');
             resetUploader();
+            var f = function(){
+              hash(_appState.hashes[0]);
+            }
+            setTimeout(f,500);
           },
           onSubmit: function () {
             registry.byId('submit').set('disabled', false);

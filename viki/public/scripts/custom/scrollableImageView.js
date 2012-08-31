@@ -1,5 +1,5 @@
-define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geometry", "dijit/registry", "dojox/mobile/ScrollableView", "dojox/mobile/ContentPane", "dojo/dom-construct", "dojo/dom-style", "dojo/dom-attr", "dojo/_base/fx", "dojo/fx", "dojo/json", "dojo/on", "dojo/window", "dojo/request", "dojo/touch"],
-    function(declare, JsonRest, dom, domGeom, registry, ScrollableView, ContentPane, domConstruct, domStyle, domAttr, baseFx, fx, JSON, on, win, request, touch) {
+define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geometry", "dijit/registry", "dojox/mobile/ScrollableView", "dojox/mobile/ContentPane", "dojo/dom-construct", "dojo/dom-style", "dojo/dom-attr", "dojo/_base/fx", "dojo/fx", "dojo/json", "dojo/on", "dojo/window", "dojo/request", "dojo/touch", "dojo/hash"],
+    function(declare, JsonRest, dom, domGeom, registry, ScrollableView, ContentPane, domConstruct, domStyle, domAttr, baseFx, fx, JSON, on, win, request, touch, hash) {
       return declare("viki.scrollableImageView", [ScrollableView], {
         // this is now the new widget context
         
@@ -214,7 +214,6 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                 }).play();
                 
                 on(overlayFade, "End", function() {
-                    //domConstruct.destroy(imageElem);
                     domConstruct.empty(imgContainer);
                     domStyle.set(overlay, "display", "none");
                 });
@@ -269,7 +268,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
           //this.singleImageView = new singleImageView({overlayID: "imageOverlay"});
         },
         numVisibleImages: function() {
-          var dims = domGeom.getContentBox(dom.byId("welcome"));  // BAD!!! - fix this by not referencing a dom element by name
+          var dims = domGeom.getContentBox(dom.byId(hash()));
           var imagesWide = Math.floor(dims.w / 106);
           var imagesHigh = Math.floor(dims.h / 106);
           return {number: imagesWide * imagesHigh, imageDim: dims.w / imagesWide};
