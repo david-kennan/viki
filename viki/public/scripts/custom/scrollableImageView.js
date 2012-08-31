@@ -287,7 +287,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
             });
             images.then(function(d) {
               if (firstimeHint && d.length) {
-                domConstruct.place("<center><div id='bottomInfo'>Hint: Pull up to retrieve more images</div></center>", 
+                domConstruct.place("<div id='bottomInfo'><center>Hint: Pull up to retrieve more images</center></div>", 
                                    registry.byId('viewimages').containerNode , "last");
                 firstimeHint = false;
               }
