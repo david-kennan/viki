@@ -9,7 +9,7 @@ var thumbnailSize = 200;  // H x W dimension in pixels; note: this also must be 
 
 // be sure to set dev false after development is complete
 exports.index = function(req, res){
-  // detect iOS and disable upload for now, will add back one supported in iOS
+  // detect iOS and disable upload for now, will add back once supported in iOS
   var ua = req.headers['user-agent'];
   var isIOS = /iPad/i.test(ua) || /iPhone/i.test(ua);
   var isAndroid = /Android/i.test(ua);
@@ -131,7 +131,7 @@ exports.viewimages = function (req, res) {
           res.end('Error: more than one topic with name ' + req.query.topic + ' found');
         }
         else {
-          Image.find({topicid: topics[0]._id}, {}, {skip:query.pageSize * query.pagesViewed, limit:query.pageSize}).sort('-votes').exec(function (err, images) {
+          Image.find({topicid: topics[0]._id}, {}, {skip:query.itemsViewed, limit:query.pageSize}).sort('-votes').exec(function (err, images) {
             res.json(200, images);
           });
         }
