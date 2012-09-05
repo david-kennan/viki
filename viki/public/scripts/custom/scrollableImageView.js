@@ -65,7 +65,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                     var tagArray = JSON.parse(tags);
                     array.forEach(tagArray, function(item, index) {
                         // The following properties are stored as fractions of the image's width and height
-                        var tagLeft = item.x * imageProps.height;
+                        var tagLeft = item.x * imageProps.width;
                         //console.log(tagLeft);
                         var tagTop = item.y * imageProps.height;
                         var tagWidth = item.width * imageProps.width;
