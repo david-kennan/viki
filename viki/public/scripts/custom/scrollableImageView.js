@@ -60,19 +60,17 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                 }
                 
                 
-                // Get tags for this image
+                // GET tags for this image
                 request('/image/tag/' + image).then(function(tags) {
                     var tagArray = JSON.parse(tags);
                     array.forEach(tagArray, function(item, index) {
                         // The following properties are stored as fractions of the image's width and height
                         var tagLeft = item.x * imageProps.width;
-                        //console.log(tagLeft);
                         var tagTop = item.y * imageProps.height;
                         var tagWidth = item.width * imageProps.width;
                         var tagHeight = item.height * imageProps.height;
-                        var tagContainer = domConstruct.create("div", {style: ("left:" + tagLeft + "px; top:" + tagTop + "px;")});
-                        domConstruct.create("div", {style: ("width:" + tagWidth + "px; height:" + tagHeight + "px")}, tagContainer);
-                                  
+                        
+                        domConstruct.create("div", {style: ("width:" + tagWidth + "px; height:" + tagHeight + "px; left:" + tagLeft + "px; top:" + tagTop + "px;"), class:"Tag"}, imgContainer);
                     });
                 });
                 
@@ -121,16 +119,19 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
             var tagPos;
             var touchDnEvent;
             var touchUpEvent;
+            var mouseOutBuffer = 15;
+            var dropDnSpace = 5;
+            var menu;
             var tagHandler = on(tagButton, "click", function () {
                 var imagePos = domGeom.position(imgContainer);
                 tagActive = !tagActive;
                 if (!tagActive) {
                     domStyle.set(cancelButton, "display", "none");
                     request.post("/image/tag/" + image, {data: {
-                        x: tagX / imagePos.w, // left side of left border, as fraction of image width
-                        y: tagY / imagePos.h, // same
-                        width: (tagPos.w - 2 * tagBorder) / imagePos.w, // also as fraction of image dimensions
-                        height: (tagPos.h - 2 * tagBorder) / imagePos.h,
+                        x: (tagX + mouseOutBuffer) / imagePos.w, // left side of left border, as fraction of image width
+                        y: (tagY + mouseOutBuffer) / imagePos.h, // same
+                        width: (tagPos.w - 2 * mouseOutBuffer) / imagePos.w, // also as fraction of image dimensions
+                        height: (tagPos.h - mouseOutBuffer - dropDnSpace - 20) / imagePos.h,
                         topic: "Outdoors"
                     }}).then(function(response) {
                         console.log(response);
@@ -138,13 +139,24 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                     domAttr.set("tagButton", "src", "/images/tag.png");
                     touchDnEvent.remove();
                     touchUpEvent.remove();
+                    
                     domStyle.set(tagDiv, "cursor", "default");
                     domStyle.set(tagDiv, "position", "absolute");
+                    domConstruct.destroy(menu);
                 }
                 else {
                     domStyle.set(cancelButton, "display", "inline-block");
                     domAttr.set("tagButton", "src", "/images/save.png");
-                    tagDiv = domConstruct.create("div", {style: "position: relative; cursor: pointer; width: 100px; height: 100px;"}, imgContainer);
+                    var defaultTagSize = 100;
+                    tagDiv = domConstruct.create("div", {style: "position: relative; cursor: pointer; width:" + (defaultTagSize + 2 * mouseOutBuffer) + "px; height:" + (mouseOutBuffer + defaultTagSize + dropDnSpace + 20) + "px;"}, imgContainer);
+                    domConstruct.create("div", {style: "left:" + (mouseOutBuffer - tagBorder) + "px; top:" + mouseOutBuffer + "px; width:" + defaultTagSize + "px; height:" + defaultTagSize + "px;", class: "Tag"}, tagDiv);
+                    menu = domConstruct.create("select", {style: "position: absolute; top:" + (mouseOutBuffer + defaultTagSize + dropDnSpace) + "px; left:" + mouseOutBuffer + "px"}, tagDiv);
+                    request('/topic/all').then(function(topics) {
+                        var topicArray = JSON.parse(topics);
+                        array.forEach(topicArray, function(item, index) {
+                            domConstruct.create("option", {value: item.name, innerHTML: item.name}, menu);
+                        });
+                    });
                     
                     var mouseTagX;
                     var mouseTagY;

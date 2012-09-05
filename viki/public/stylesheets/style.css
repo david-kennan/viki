@@ -44,9 +44,12 @@ img {
 }
 
 #imageOverlay #imageContainer div {
+    z-index: 1004;
+    position: absolute;
+}
+
+#imageOverlay #imageContainer .Tag {
     border-style: solid;
     border-width: 3px;
     border-color: #ADD8E6;
-    z-index: 1004;
-    position: absolute;
 }
