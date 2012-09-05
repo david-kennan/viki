@@ -259,6 +259,8 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
         // this is called when the view if first created - setup and such
         startup: function() {
           debug.log("viki.scrollableImageView init...");
+          debug.log("viki.scrollableImageView topic: " + this.topic);
+          _appState.currTopic = this.topic;  // BAD: break of encapsulation, fix this soon
           var handler = this.clickHandler;
           var imgDispInfo = this.numVisibleImages();
           var numImages = imgDispInfo.number * 2;  // get two pages at a time
@@ -273,7 +275,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
 
           this.getPage = function () {
             debug.log("getPage called");
-            var images = imageStore.query({type:'JSON', topic:'Outdoors', pageSize: numImages, itemsViewed:itemsDisplayed}).map(function(image) {
+            var images = imageStore.query({type:'JSON', topic: this.topic, pageSize: numImages, itemsViewed:itemsDisplayed}).map(function(image) {
             if (firstimeIns) {
               imageDiv.innerHTML = "";
               firstimeIns = false;

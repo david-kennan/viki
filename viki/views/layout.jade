@@ -17,7 +17,7 @@ html(lang="en")
       isAndroid = #{isAndroid};
   body
     div#titleheader(data-dojo-type="dojox.mobile.Heading", data-dojo-props="fixed: 'top'") #{appname} | Welcome
-    
+
     block content
     
     ul(data-dojo-type="dojox.mobile.TabBar", data-dojo-props="iconBase: 'images/iconStrip.png', fixed: 'bottom'")
@@ -26,4 +26,4 @@ html(lang="en")
       li#uploadButton(data-dojo-type="dojox.mobile.TabBarButton", 
          data-dojo-props="iconPos1: '0,31,29,30', iconPos2: '29,31,29,30', moveTo: '#upload'") Upload
       li#viewimagesButton(data-dojo-type="dojox.mobile.TabBarButton", 
-         data-dojo-props="iconPos1: '0,58,29,30', iconPos2: '29,58,29,30', moveTo:'#viewimages'") View Images
+         data-dojo-props="iconPos1: '0,58,29,30', iconPos2: '29,58,29,30', moveTo:'#viewimages'") Browse

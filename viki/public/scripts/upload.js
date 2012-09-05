@@ -9,7 +9,7 @@ require(["dojox/mobile/parser", "dojo/dom", "dojo/query", "dijit/registry", "doj
       var submitString = "Add Image to Viki";
     
       // stores for topics - need both ;-(
-      var memoryStore =  new Memory({idProperty: 'name'});
+      _appState.memoryTopicStore =  new Memory({idProperty: 'name'});
       var topicStore = new JsonRest({target: '/topic/all', idProperty: 'name'});
 
       // ideally use dojo's own validation, but seems a bit complicated so we will do this for now
@@ -38,10 +38,10 @@ require(["dojox/mobile/parser", "dojo/dom", "dojo/query", "dijit/registry", "doj
       // multiple times in order to refresh data
       var topicComboBox = function () {
         topicStore.query({}).map(function(topic) {
-          memoryStore.put(topic);
+          _appState.memoryTopicStore.put(topic);
         });
         if(!topicBox) {
-          topicBox = new dojox.mobile.ComboBox({'store': memoryStore}, 'topic');
+          topicBox = new dojox.mobile.ComboBox({'store': _appState.memoryTopicStore}, 'topic');
         }
       }
 
