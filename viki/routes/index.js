@@ -238,3 +238,15 @@ exports.getTopics = function (req, res) {
     res.json(200, topics);   
   });
 }
+
+exports.newTopic = function (req, res) {
+  Topic.find({name: req.params.topicName}, function (err, topic) {
+    if (topic.length == 0) {
+      topic = new Topic({name:req.params.topicName, description: 'A description of this topic'});
+      topic.save();
+      res.json(200, {success: true});
+    } else {
+      res.json(404, {success: false, reason: "duplicate_topic"});
+    }
+  });
+}
