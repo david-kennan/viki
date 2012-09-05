@@ -150,7 +150,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                     var mousemoveHandler;
                     function touchRelease() {
                         if (isAndroid) {
-                            tagDiv.removeEventListener("touchmove", mousemoveHandler);
+                            tagDiv.removeEventListener("touchmove");
                         }
                         else {
                             mousemoveHandler.remove();
