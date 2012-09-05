@@ -70,8 +70,9 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                         var tagTop = item.y * imageProps.height;
                         var tagWidth = item.width * imageProps.width;
                         var tagHeight = item.height * imageProps.height;
-                        var styleString = 
-                        domConstruct.create("div", {style: ("left:" + tagLeft + "px; top:" + tagTop + "px; width:" + tagWidth + "px; height:" + tagHeight + "px")}, imageContainer);
+                        var tagContainer = domConstruct.create("div", {style: ("left:" + tagLeft + "px; top:" + tagTop + "px;")});
+                        domConstruct.create("div", {style: ("width:" + tagWidth + "px; height:" + tagHeight + "px")}, tagContainer);
+                                  
                     });
                 });
                 
