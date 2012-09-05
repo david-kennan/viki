@@ -17,7 +17,7 @@ var _appState = {
 // end state
 
 // the main code, loaded with the app
-require(["dojox/mobile/parser", "dojox/mobile/deviceTheme", "dijit/registry", "dojo/hash", "dojo/topic", "dojo/dom", "dojox/mobile/bookmarkable", "dojox/mobile/ScrollableView", "dojox/mobile/TabBar", "dojox/mobile/ContentPane", "dojox/mobile/compat", "dojox/mobile", "dojox/mobile/Button", "dojox/mobile/TextBox", "custom/scrollableImageView"], 
+require(["dojox/mobile/parser", "dojox/mobile/deviceTheme", "dijit/registry", "dojo/hash", "dojo/topic", "dojo/dom", "dojox/mobile/bookmarkable", "dojox/mobile/ScrollableView", "dojox/mobile/TabBar", "dojox/mobile/ContentPane", "dojox/mobile/compat", "dojox/mobile", "dojox/mobile/Button", "dojox/mobile/TextBox",  "custom/scrollableImageView", "dojox/mobile/ComboBox"], 
     function(mobileParser, deviceTheme, registry, hash, topic, dom) {
       // define this to update headers and buttons when needed
       var updateViews = function() {

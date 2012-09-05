@@ -1,11 +1,17 @@
 // upload view js file
-require(["dojox/mobile/parser", "dojo/dom", "dijit/registry", "dojo/dom-construct", "dojo/ready", "dojox/validate/_base", "dojo/hash"],
-    function(parser, dom, registry, construct, ready, validate, hash) {
+require(["dojox/mobile/parser", "dojo/dom", "dijit/registry", "dojo/dom-construct", "dojo/ready", "dojox/validate/_base", "dojo/hash", "dojo/store/JsonRest", "dojo/store/Memory"],
+    function(parser, dom, registry, construct, ready, validate, hash, JsonRest, Memory) {
       debug.log("loaded upload.js...");
-      var uploader;
+      
       var form;
+      var uploader;
+      var topicBox;
       var submitString = "Add Image to Viki";
-       
+    
+      // stores for topics - need both ;-(
+      var memoryStore =  new Memory({idProperty: 'name'});
+      var topicStore = new JsonRest({target: '/topic/all', idProperty: 'name'});
+
       // ideally use dojo's own validation, but seems a bit complicated so we will do this for now
       var isValid = function () {
         // check that gist is not empty
@@ -27,7 +33,18 @@ require(["dojox/mobile/parser", "dojo/dom", "dijit/registry", "dojo/dom-construc
       var resetUploader = function () {
         uploader = newUploader();
       }
-      
+
+      // create stores and and a combox for entering topics - this can be called
+      // multiple times in order to refresh data
+      var topicComboBox = function () {
+        topicStore.query({}).map(function(topic) {
+          memoryStore.put(topic);
+        });
+        if(!topicBox) {
+          topicBox = new dojox.mobile.ComboBox({'store': memoryStore}, 'topic');
+        }
+      }
+
       // returns a fresh loader
       var newUploader = function () {
         tmp = new qq.FileUploader({
@@ -39,6 +56,7 @@ require(["dojox/mobile/parser", "dojo/dom", "dijit/registry", "dojo/dom-construc
             construct.destroy(dom.byId("placeholder"));
             registry.byId('submit').set('value', 'File Uploaded Successfully');
             resetUploader();
+            topicComboBox();
             var f = function(){
               hash(_appState.hashes[0]);
             }
@@ -57,9 +75,14 @@ require(["dojox/mobile/parser", "dojo/dom", "dijit/registry", "dojo/dom-construc
         registry.byId('submit').set('disabled', true);
         return tmp; 
       }
-      
+
+
       // this sets everything up on dom load
       ready(function() {
+        // create autocomplete textbox, after calling for new data
+        topicComboBox();
+        
+        // initialize form
         form = registry.byId('uploadForm');
         uploader = newUploader();
         registry.byId('submit').on('click', function() {
@@ -73,4 +96,4 @@ require(["dojox/mobile/parser", "dojo/dom", "dijit/registry", "dojo/dom-construc
         });
       });
 
-    });
+});
