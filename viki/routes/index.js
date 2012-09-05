@@ -232,3 +232,9 @@ exports.getTags = function (req, res) {
         }
     });
 };
+
+exports.getTopics = function (req, res) {
+  Topic.find({}, function (err, topics) {
+    res.json(200, topics);   
+  });
+}
