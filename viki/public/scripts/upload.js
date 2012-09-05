@@ -1,6 +1,6 @@
 // upload view js file
-require(["dojox/mobile/parser", "dojo/dom", "dijit/registry", "dojo/dom-construct", "dojo/ready", "dojox/validate/_base", "dojo/hash", "dojo/store/JsonRest", "dojo/store/Memory"],
-    function(parser, dom, registry, construct, ready, validate, hash, JsonRest, Memory) {
+require(["dojox/mobile/parser", "dojo/dom", "dojo/query", "dijit/registry", "dojo/dom-construct", "dojo/ready", "dojox/validate/_base", "dojo/hash", "dojo/store/JsonRest", "dojo/store/Memory"],
+    function(parser, dom, query, registry, construct, ready, validate, hash, JsonRest, Memory) {
       debug.log("loaded upload.js...");
       
       var form;
@@ -57,6 +57,7 @@ require(["dojox/mobile/parser", "dojo/dom", "dijit/registry", "dojo/dom-construc
             registry.byId('submit').set('value', 'File Uploaded Successfully');
             resetUploader();
             topicComboBox();
+            registry.byId('fileuploader').set('disabled', false);
             var f = function(){
               hash(_appState.hashes[0]);
             }
@@ -65,6 +66,7 @@ require(["dojox/mobile/parser", "dojo/dom", "dijit/registry", "dojo/dom-construc
           onSubmit: function () {
             registry.byId('submit').set('disabled', false);
             registry.byId('submit').set('value', submitString);
+            registry.byId('fileuploader').set('disabled', true);
           },
           allowedExtensions: ['jpg','jpeg','png','bmp','tiff'],
           acceptFiles: ['image/*'],
