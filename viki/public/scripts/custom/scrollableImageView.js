@@ -1,5 +1,5 @@
-define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geometry", "dijit/registry", "dojox/mobile/ScrollableView", "dojox/mobile/ContentPane", "dojo/dom-construct", "dojo/dom-style", "dojo/dom-attr", "dojo/_base/fx", "dojo/fx", "dojo/json", "dojo/on", "dojo/window", "dojo/request", "dojo/touch", "dojo/hash", "dojo/_base/array"],
-    function(declare, JsonRest, dom, domGeom, registry, ScrollableView, ContentPane, domConstruct, domStyle, domAttr, baseFx, fx, JSON, on, win, request, touch, hash, array) {
+define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geometry", "dijit/registry", "dojox/mobile/ScrollableView", "dojox/mobile/ContentPane", "dojo/dom-construct", "dojo/dom-style", "dojo/dom-attr", "dojo/_base/fx", "dojo/fx", "dojo/json", "dojo/on", "dojo/window", "dojo/request", "dojo/touch", "dojo/hash", "dojo/_base/array", "dojo/store/JsonRest", "dojo/store/Memory"],
+    function(declare, JsonRest, dom, domGeom, registry, ScrollableView, ContentPane, domConstruct, domStyle, domAttr, baseFx, fx, JSON, on, win, request, touch, hash, array, JsonRest, Memory) {
       return declare("viki.scrollableImageView", [ScrollableView], {
         // this is now the new widget context
         
@@ -127,12 +127,13 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                 tagActive = !tagActive;
                 if (!tagActive) {
                     domStyle.set(cancelButton, "display", "none");
+                    var dropDown = dom.byId('tagTopics');
                     request.post("/image/tag/" + image, {data: {
                         x: (tagX + mouseOutBuffer) / imagePos.w, // left side of left border, as fraction of image width
                         y: (tagY + mouseOutBuffer) / imagePos.h, // same
                         width: (tagPos.w - 2 * mouseOutBuffer) / imagePos.w, // also as fraction of image dimensions
                         height: (tagPos.h - mouseOutBuffer - dropDnSpace - 20) / imagePos.h,
-                        topic: "Outdoors"
+                        topic: dropDown.value
                     }}).then(function(response) {
                         console.log(response);
                     });
@@ -148,7 +149,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                     domStyle.set(cancelButton, "display", "inline-block");
                     domAttr.set("tagButton", "src", "/images/save.png");
                     var defaultTagSize = 100;
-                    tagDiv = domConstruct.create("div", {style: "position: relative; cursor: pointer; width:" + (defaultTagSize + 2 * mouseOutBuffer) + "px; height:" + (mouseOutBuffer + defaultTagSize + dropDnSpace + 20) + "px;"}, imgContainer);
+                    tagDiv = domConstruct.create("div", {style: "position: relative; cursor: pointer; width:" + (defaultTagSize + 2 * mouseOutBuffer) + "px; height:" + (mouseOutBuffer + defaultTagSize) + "px;"}, imgContainer);
                     domConstruct.create("div", {style: "left:" + (mouseOutBuffer - tagBorder) + "px; top:" + mouseOutBuffer + "px; width:" + defaultTagSize + "px; height:" + defaultTagSize + "px;", class: "Tag"}, tagDiv);
                     menu = domConstruct.create("select", {style: "position: absolute; top:" + (mouseOutBuffer + defaultTagSize + dropDnSpace) + "px; left:" + mouseOutBuffer + "px"}, tagDiv);
                     request('/topic/all').then(function(topics) {
