@@ -43,16 +43,17 @@ app.configure('production', function(){
 });
 
 // route
-app.get('/', routes.index);                         // home page
-app.get('/image/upload', routes.upload);            // upload an image
-app.get('/image/view/all', routes.viewimages);      // view images
-app.get('/image/get/:imageID', routes.getImage);    // get a specific image
-app.post('/image/upload', routes.uploadImage);      // upload an image
-app.get('/image/like/:imageID', routes.likeImage);  // like an image
-app.get('/image/tag/:imageID', routes.getTags);     // get image tags
-app.post('/image/tag/:imageID', routes.tagImage);   // tag an image
-app.get('/topic/new/:topicName', routes.newTopic);  // create a new topic
-app.get('/topic/all', routes.getTopics);            // get all topics
+app.get('/', routes.index);                            // home page
+app.get('/image/upload', routes.upload);               // upload an image
+app.get('/image/view/all', routes.viewimages);         // view images
+app.get('/image/get/:imageID', routes.getImage);       // get a specific image
+app.post('/image/upload', routes.uploadImage);         // upload an image
+app.get('/image/like/:imageID', routes.likeImage);     // like an image
+app.get('/image/tag/:imageID', routes.getTags);        // get image tags
+app.post('/image/tag/:imageID', routes.tagImage);      // tag an image
+app.get('/image/delete/:imageID', routes.deleteImage); // delete an image
+app.get('/topic/new/:topicName', routes.newTopic);     // create a new topic
+app.get('/topic/all', routes.getTopics);               // get all topics
 
 // listen
 http.createServer(app).listen(app.get('port'), function(){
