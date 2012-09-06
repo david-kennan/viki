@@ -61,15 +61,13 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                 
                 
                 // GET tags for this image
-                request('/image/tag/' + image).then(function(tags) {
-                    var tagArray = JSON.parse(tags);
-                    array.forEach(tagArray, function(item, index) {
+                request('/image/tag/' + image, {handleAs: "json"}).then(function(tags) {
+                    array.forEach(tags, function(item, index) {
                         // The following properties are stored as fractions of the image's width and height
                         var tagLeft = item.x * imageProps.width;
                         var tagTop = item.y * imageProps.height;
                         var tagWidth = item.width * imageProps.width;
                         var tagHeight = item.height * imageProps.height;
-                        
                         domConstruct.create("div", {style: ("width:" + tagWidth + "px; height:" + tagHeight + "px; left:" + tagLeft + "px; top:" + tagTop + "px;"), class:"Tag"}, imgContainer);
                     });
                 });
@@ -112,12 +110,14 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
             var tagButton = registry.byId("tagButton");
             var cancelButton = dom.byId("cancelTag");
             var tagActive = false;
+            var tagContainer;
             var tagDiv;
             var tagBorder = 3; // this is also hardcoded in style.css - don't forget to change it there
             var tagX;
             var tagY;
             var tagPos;
             var touchDnEvent;
+            var mousemoveHandler;
             var touchUpEvent;
             var mouseOutBuffer = 15;
             var dropDnSpace = 5;
@@ -127,13 +127,13 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                 tagActive = !tagActive;
                 if (!tagActive) {
                     domStyle.set(cancelButton, "display", "none");
-                    var dropDown = dom.byId('tagTopics');
+                    var tagSize = domGeom.position(tagDiv);
                     request.post("/image/tag/" + image, {data: {
                         x: (tagX + mouseOutBuffer) / imagePos.w, // left side of left border, as fraction of image width
                         y: (tagY + mouseOutBuffer) / imagePos.h, // same
-                        width: (tagPos.w - 2 * mouseOutBuffer) / imagePos.w, // also as fraction of image dimensions
-                        height: (tagPos.h - mouseOutBuffer - dropDnSpace - 20) / imagePos.h,
-                        topic: dropDown.value
+                        width: (tagSize.w - 2 * tagBorder) / imagePos.w, // also as fraction of image dimensions
+                        height: (tagSize.h - 2 * tagBorder) / imagePos.h,
+                        topic: menu.value
                     }}).then(function(response) {
                         debug.log(response);
                     });
@@ -141,48 +141,66 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                     touchDnEvent.remove();
                     touchUpEvent.remove();
                     
-                    domStyle.set(tagDiv, "cursor", "default");
-                    domStyle.set(tagDiv, "position", "absolute");
+                    domStyle.set(tagContainer, "cursor", "default");
+                    domStyle.set(tagContainer, "position", "absolute");
                     domConstruct.destroy(menu);
+                    
+                    if (isAndroid) {
+                        tagContainer.removeEventListener("touchmove", mousemoveHandler);
+                    }
                 }
                 else {
                     domStyle.set(cancelButton, "display", "inline-block");
                     domAttr.set("tagButton", "src", "/images/save.png");
                     var defaultTagSize = 100;
-                    tagDiv = domConstruct.create("div", {style: "position: relative; cursor: pointer; width:" + (defaultTagSize + 2 * mouseOutBuffer) + "px; height:" + (mouseOutBuffer + defaultTagSize) + "px;"}, imgContainer);
-                    domConstruct.create("div", {style: "left:" + (mouseOutBuffer - tagBorder) + "px; top:" + mouseOutBuffer + "px; width:" + defaultTagSize + "px; height:" + defaultTagSize + "px;", class: "Tag"}, tagDiv);
-                    menu = domConstruct.create("select", {style: "position: absolute; top:" + (mouseOutBuffer + defaultTagSize + dropDnSpace) + "px; left:" + mouseOutBuffer + "px"}, tagDiv);
-                    request('/topic/all').then(function(topics) {
-                        var topicArray = JSON.parse(topics);
-                        array.forEach(topicArray, function(item, index) {
+                    tagContainer = domConstruct.create("div", {style: "position: relative; cursor: pointer; width:" + (defaultTagSize + 2 * mouseOutBuffer) + "px; height:" + (mouseOutBuffer + defaultTagSize) + "px; left:" + (imagePos.w / 2 - defaultTagSize / 2 - mouseOutBuffer) + "px; top:" + (imagePos.h / 2 - defaultTagSize / 2 - mouseOutBuffer) + "px;"}, imgContainer);
+                    tagDiv = domConstruct.create("div", {style: "left:" + (mouseOutBuffer - tagBorder) + "px; top:" + mouseOutBuffer + "px; width:" + defaultTagSize + "px; height:" + defaultTagSize + "px;", class: "Tag"}, tagContainer);
+                    menu = domConstruct.create("select", {style: "position: absolute; top:" + (mouseOutBuffer + defaultTagSize + dropDnSpace) + "px; left:" + (mouseOutBuffer - tagBorder) + "px"}, tagContainer);
+                    request('/topic/all', {handleAs: "json"}).then(function(topics) {
+                        array.forEach(topics, function(item, index) {
                             domConstruct.create("option", {value: item.name, innerHTML: item.name}, menu);
                         });
                     });
                     
                     var mouseTagX;
                     var mouseTagY;
-                    var mousemoveHandler;
-                    function touchRelease() {
-                        if (isAndroid) {
-                            tagDiv.removeEventListener("touchmove");
-                        }
-                        else {
+                    function touchRelease () {
+                        if (!isAndroid)
                             mousemoveHandler.remove();
-                        }
                     }
-                    touchDnEvent = touch.press(tagDiv, function(event) {
-                        tagPos = domGeom.position(tagDiv);
+                    touchDnEvent = touch.press(tagContainer, function(event) {
+                        tagPos = domGeom.position(tagContainer);
                         mouseTagX = event.pageX - tagPos.x;
                         mouseTagY = event.pageY - tagPos.y;
+                        var tagSize = domGeom.position(tagDiv);
+                        var menuSize = domGeom.position(menu);
+                        console.log(menuSize);
                         function touchMove(event) {
                             var mousePositionX = event.pageX - imagePos.x;
                             tagX = mousePositionX - mouseTagX;
                             var mousePositionY = event.pageY - imagePos.y;
                             tagY = mousePositionY - mouseTagY;
-                            if (tagX >= 0 && tagX <= imagePos.w - tagPos.w)
-                                domStyle.set(tagDiv, "left", tagX + "px");
-                            if (tagY >= 0 && tagY <= imagePos.h - tagPos.h)
-                                domStyle.set(tagDiv, "top", tagY + "px");
+                            
+                            if (tagX < tagBorder - mouseOutBuffer)
+                                domStyle.set(tagContainer, "left", (tagBorder - mouseOutBuffer) + "px");
+                            else if (tagX > imagePos.w - tagSize.w - mouseOutBuffer + tagBorder)
+                                domStyle.set(tagContainer, "left", (imagePos.w - tagSize.w - mouseOutBuffer + tagBorder) + "px");
+                            else
+                                domStyle.set(tagContainer, "left", tagX + "px");
+                            
+                            if (tagY < -mouseOutBuffer)
+                                domStyle.set(tagContainer, "top", -mouseOutBuffer + "px");
+                            else if (tagY > imagePos.h - tagSize.h - mouseOutBuffer)
+                                domStyle.set(tagContainer, "top", (imagePos.h - tagSize.h - mouseOutBuffer) + "px");
+                            else
+                                domStyle.set(tagContainer, "top", tagY + "px");
+                            
+                            if (tagY >= imagePos.h - tagSize.h - mouseOutBuffer - dropDnSpace - menuSize.h) {
+                                domStyle.set(menu, "top", (mouseOutBuffer - menuSize.h - dropDnSpace) + "px");
+                            }
+                            else {
+                                domStyle.set(menu, "top", (mouseOutBuffer + tagSize.h - 2 * tagBorder + dropDnSpace) + "px");
+                            }
                             if (mousePositionX < 5 || mousePositionX > imagePos.w - 5 || mousePositionY < 5 || mousePositionY > imagePos.h - 5)
                                 touchRelease();
                         }
@@ -191,16 +209,16 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                                 event.preventDefault();
                                 touchMove(event.targetTouches[0]);
                             };
-                            tagDiv.addEventListener("touchmove", mousemoveHandler);
+                            tagContainer.addEventListener("touchmove", mousemoveHandler);
                         }
                         else {
-                            mousemoveHandler = touch.move(tagDiv, function (event) {
+                            mousemoveHandler = touch.move(tagContainer, function (event) { // this event not fired on android
                                 event.preventDefault();
                                 touchMove(event);
                             });
                         }
                     });
-                    touchUpEvent = touch.release(tagDiv, touchRelease);
+                    touchUpEvent = touch.release(tagContainer, touchRelease); // this event not fired on android
                 }
             });
             var imageDeleteHandler = on(registry.byId("deleteButton"), "click", function() {
@@ -223,7 +241,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
             var tagCancelHandler = on(registry.byId("cancelTag"), "click", function() {
                 domAttr.set("tagButton", "src", "/images/tag.png");
                 domStyle.set(cancelButton, "display", "none");
-                domConstruct.destroy(tagDiv);
+                domConstruct.destroy(tagContainer);
                 tagActive = false;
             });
             var closeHandler = on(closeButton, "click", function() {
@@ -278,7 +296,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                 
                 if (tagActive) {
                     var tagFade = baseFx.animateProperty({
-                        node: tagDiv,
+                        node: tagContainer,
                         properties: {opacity: 0, width: 0, height: 0},
                         duration: 300
                     }).play();
