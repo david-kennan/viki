@@ -248,9 +248,32 @@ exports.deleteImage = function (req, res) {
     }
     else {
       // delete image & thumbnail in gridfs
-      
+      var grid = new Grid(mongoose.connection.db);
+      grid.delete(mongo.ObjectID.createFromHexString(images[0].dataid), function(err, result) {
+        if (!err) { console.log("Deleted image with id "+images[0].dataid); } 
+        else { 
+          console.log(err) 
+          res.json(500, {success: false});
+        }
+      });
+      grid.delete(mongo.ObjectID.createFromHexString(images[0].thumbnailid), function(err, result) {
+        if (!err) { console.log("Deleted image thumbnail with id "+images[0].thumbnailid); } 
+        else { 
+          console.log(err) 
+          res.json(500, {success: false});
+        }
+      });
       // delete any tags
+      Tag.remove({imageId: images[0]._id}, function (err) {
+        if (err) { console.log(err); }
+      });
       // delete the image record
+      Image.remove({dataid: req.params.imageID}, function(err) {
+        if (err) {
+          console.log(err);
+          res.json(500, {success: false});
+        }
+      });
       res.json(200, {success: true});
     }
   });
