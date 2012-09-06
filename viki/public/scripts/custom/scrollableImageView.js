@@ -122,14 +122,19 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
             var mouseOutBuffer = 15;
             var dropDnSpace = 5;
             var menu;
-            var tagHandler = on(tagButton, "click", function () {
-                var imagePos = domGeom.position(imgContainer);
-                tagActive = !tagActive;
-                if (!tagActive) {
+            
+            var saveTagHandler = null;
+            
+            function saveTag () {
+                if (saveTagHandler) {
+                    saveTagHandler.remove();
+                    saveTagHandler = null;
+                    tagStartHandler = on(tagButton, "click", startTagging);
+                    var imagePos = domGeom.position(imgContainer);
                     domStyle.set(cancelButton, "display", "none");
                     var tagSize = domGeom.position(tagDiv);
                     request.post("/image/tag/" + image, {data: {
-                        x: (tagX + mouseOutBuffer) / imagePos.w, // left side of left border, as fraction of image width
+                        x: (tagX + mouseOutBuffer - tagBorder) / imagePos.w, // left side of left border, as fraction of image width
                         y: (tagY + mouseOutBuffer) / imagePos.h, // same
                         width: (tagSize.w - 2 * tagBorder) / imagePos.w, // also as fraction of image dimensions
                         height: (tagSize.h - 2 * tagBorder) / imagePos.h,
@@ -149,11 +154,19 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                         tagContainer.removeEventListener("touchmove", mousemoveHandler);
                     }
                 }
-                else {
-                    domStyle.set(cancelButton, "display", "inline-block");
+            }
+            
+            function startTagging () {
+                if (tagStartHandler) {
+                    tagStartHandler.remove();
+                    tagStartHandler = null;
+                    saveTagHandler = on(tagButton, "click", saveTag);
+                    var imagePos = domGeom.position(imgContainer);domStyle.set(cancelButton, "display", "inline-block");
                     domAttr.set("tagButton", "src", "/images/save.png");
                     var defaultTagSize = 100;
-                    tagContainer = domConstruct.create("div", {style: "position: relative; cursor: pointer; width:" + (defaultTagSize + 2 * mouseOutBuffer) + "px; height:" + (mouseOutBuffer + defaultTagSize) + "px; left:" + (imagePos.w / 2 - defaultTagSize / 2 - mouseOutBuffer) + "px; top:" + (imagePos.h / 2 - defaultTagSize / 2 - mouseOutBuffer) + "px;"}, imgContainer);
+                    tagX = (imagePos.w / 2 - defaultTagSize / 2 - mouseOutBuffer);
+                    tagY = (imagePos.h / 2 - defaultTagSize / 2 - mouseOutBuffer);
+                    tagContainer = domConstruct.create("div", {style: "position: relative; cursor: pointer; width:" + (defaultTagSize + 2 * mouseOutBuffer) + "px; height:" + (mouseOutBuffer + defaultTagSize) + "px; left:" + tagX + "px; top:" + tagY + "px;"}, imgContainer);
                     tagDiv = domConstruct.create("div", {style: "left:" + (mouseOutBuffer - tagBorder) + "px; top:" + mouseOutBuffer + "px; width:" + defaultTagSize + "px; height:" + defaultTagSize + "px;", class: "Tag"}, tagContainer);
                     menu = domConstruct.create("select", {style: "position: absolute; top:" + (mouseOutBuffer + defaultTagSize + dropDnSpace) + "px; left:" + (mouseOutBuffer - tagBorder) + "px"}, tagContainer);
                     request('/topic/all', {handleAs: "json"}).then(function(topics) {
@@ -174,7 +187,6 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                         mouseTagY = event.pageY - tagPos.y;
                         var tagSize = domGeom.position(tagDiv);
                         var menuSize = domGeom.position(menu);
-                        console.log(menuSize);
                         function touchMove(event) {
                             var mousePositionX = event.pageX - imagePos.x;
                             tagX = mousePositionX - mouseTagX;
@@ -220,7 +232,10 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                     });
                     touchUpEvent = touch.release(tagContainer, touchRelease); // this event not fired on android
                 }
-            });
+            }
+            
+            var tagStartHandler = on(tagButton, "click", startTagging);
+            
             var imageDeleteHandler = on(registry.byId("deleteButton"), "click", function() {
                 if(confirm("Are you sure?")) {
                   imageDeleteHandler.remove();
@@ -239,16 +254,25 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                 }
             });
             var tagCancelHandler = on(registry.byId("cancelTag"), "click", function() {
-                domAttr.set("tagButton", "src", "/images/tag.png");
-                domStyle.set(cancelButton, "display", "none");
-                domConstruct.destroy(tagContainer);
-                tagActive = false;
+                if (saveTagHandler) {
+                    domAttr.set("tagButton", "src", "/images/tag.png");
+                    domStyle.set(cancelButton, "display", "none");
+                    domConstruct.destroy(tagContainer);
+                    tagActive = false;
+                        saveTagHandler.remove();
+                        saveTagHandler = null;
+                    tagStartHandler = on(tagButton, "click", startTagging);
+                }
             });
             var closeHandler = on(closeButton, "click", function() {
+                domAttr.set("tagButton", "src", "/images/tag.png");
                 domAttr.set("likeButton", "src", "/images/like.png");
                 domStyle.set(cancelButton, "display", "none");
                 likeHandler.remove();
-                tagHandler.remove();
+                if (tagStartHandler)
+                    tagStartHandler.remove();
+                else
+                    saveTagHandler.remove();
                 closeHandler.remove();
                 
                 var containerProps = {};
