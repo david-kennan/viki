@@ -244,7 +244,8 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
             
             var tagStartHandler = on(tagButton, "click", startTagging);
             
-            var imageDeleteHandler = on(registry.byId("deleteButton"), "click", function() {
+            var delButton = registry.byId("deleteButton");
+            function imgDeleteFunction () {
                 if(confirm("Are you sure?")) {
                   imageDeleteHandler.remove();
                   debug.log("image deleted: "+image); 
@@ -260,7 +261,12 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                   // synthetic event since code has no separation from click event right now
                   registry.byId('closeButton').emit('click');
                 }
-            });
+                else {
+                    on.once(delButton, "click", imgDeleteFunction);
+                }
+            }
+            
+            var imageDeleteHandler = on.once(delButton, "click", imgDeleteFunction);
             var tagCancelHandler = on(registry.byId("cancelTag"), "click", function() {
                 if (saveTagHandler) {
                     domAttr.set("tagButton", "src", "/images/tag.png");
@@ -273,6 +279,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                 }
             });
             var closeHandler = on(closeButton, "click", function() {
+                imageDeleteHandler.remove();
                 domAttr.set("tagButton", "src", "/images/tag.png");
                 domAttr.set("likeButton", "src", "/images/like.png");
                 domStyle.set(cancelButton, "display", "none");
