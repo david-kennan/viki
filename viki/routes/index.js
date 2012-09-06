@@ -22,9 +22,8 @@ exports.upload = function(req, res) {
 
 exports.uploadImage = function(req, res) {
   if(req.xhr) {
-    console.log("XHR Request Support Does Not Exist.");
-    res.writeHead(404);
-    res.end("Internal error");
+    res.json(400,{success: false, reason: "invalid_upload_method_attempted"});
+    return; // just in case
   }
   if (req.files.qqfile.length != 0) {
     // Image processing
@@ -33,8 +32,11 @@ exports.uploadImage = function(req, res) {
     var exec = require('child_process').exec;
     exec('file -b --mime-type ' + path, function(error, stdout, stderr) {
       if (!(stdout == 'image/jpeg\n' || stdout == 'image/png\n' || stdout == 'image/tiff\n' || stdout == 'image/tif\n' || stdout == 'image/x-tif\n' || stdout == 'image/x-tiff\n' || stdout == 'image/bmp\n' || stdout == 'image/x-bmp\n' || stdout == 'image/x-bitmap\n' || stdout == 'image/x-xbitmap\n' || stdout == 'image/x-win-bitmap\n' || stdout == 'image/x-windows-bitmap\n' || stdout == 'image/ms-bmp\n' || stdout == 'image/x-ms-bmp\n')) {
-        res.writeHead(200);
-        res.end("Invalid file type uploaded: please upload a JPEG, PNG, TIFF, or BMP image");
+        res.send(JSON.stringify({
+          success: false, 
+          reason: "invalid_file_type_error",
+          detail: stdout
+        }), {'Content-Type': 'text/plain'}, 400);
         return;
       }
       var gm = require('gm');
@@ -83,7 +85,11 @@ exports.uploadImage = function(req, res) {
                       Topic.find({name: req.param('imagetopic')}, function(err, topics) {
                         var imageTopic;
                         if (topics.length > 1) {
-                          res.end(200, 'Error: there is more than one topic with name ' + req.param('imagetopic'));
+                          res.send(JSON.stringify({
+                            success: false, 
+                            reason: "multiple_topic_error",
+                            detail: req.param('imagetopic')
+                          }), {'Content-Type': 'text/plain'}, 400);
                           return;
                         }
                         else if (topics.length == 0) {
@@ -109,8 +115,7 @@ exports.uploadImage = function(req, res) {
 
   }
   else {
-    res.writeHead(200);
-    res.end("No file supplied for upload, that's an error. You shouldn't be seeing this, so either you're a nefarious user, or there's actually something wrong - we'll look into it.");
+    res.json(400, {success: false, reason: "no_file_provided_error"});
   }
 }
 
@@ -119,7 +124,7 @@ exports.viewimages = function (req, res) {
   if (query.type == "JSON") {
     if (query.topic) {
       Topic.find({name: query.topic}, function (err, topics) {
-        // for developement only //
+        // for development only //
         if (topics.length == 0) {
           var tmptopic = new Topic({name: 'Outdoors', description: 'Outdoor Images', category: 'Nature'});
           tmptopic.save();
@@ -127,8 +132,7 @@ exports.viewimages = function (req, res) {
         }
         // delete after dev //
         else if (topics.length > 1) {
-          res.writeHead(200);
-          res.end('Error: more than one topic with name ' + req.query.topic + ' found');
+          res.json(500, {success: false, reason: "duplicate_topic_error", detail: req.query.topic});
         }
         else {
           Image.find({topicid: topics[0]._id}, {}, {skip:query.itemsViewed, limit:query.pageSize}).sort('-votes').exec(function (err, images) {
@@ -141,12 +145,6 @@ exports.viewimages = function (req, res) {
   else {
     res.render('view_images')
   }
-  /*else {
-    Image.find(function (err, images) {
-    res.json(200, images);
-    });
-    }
-    }*/
 };
 
 exports.getImage = function (req, res) {
@@ -166,17 +164,14 @@ exports.likeImage = function (req, res) {
     var id = req.params.imageID;
     Image.find({dataid: id}, function(err, images) {
         if (images.length == 0) {
-            res.writeHead(200);
-            res.end('error: no images with id ' + id + ' found when like clicked.');
+            res.json(500, {success: false, reason: "image_not_found_error", detail: id});
         }
         else if (images.length > 1) {
-            res.writeHead(200);
-            res.end('error: more than one image  with id ' + id + ' found when like clicked.');
+            res.json(500, {success: false, reason: "duplicate_image_error", detail: id});
         }
         else {
             images[0].like();
-            res.writeHead(200);
-            res.end("Sucess: now image's votes are " + images[0].votes + "\n");
+            res.json(200, {success: true, votes: images[0].votes});
         }
     });
 };
@@ -185,45 +180,37 @@ exports.tagImage = function (req, res) {
     var id = req.params.imageID;
     Image.find({dataid: id}, function (err, images) {
         if (images.length == 0) {
-            res.writeHead(200);
-            res.end("Error, no images found");
+            res.json(500, {success: false, reason: "images_not_found_error"});
         }
         else if (images.length > 1) {
-            res.writeHead(200);
-            res.end("Error, multiple images found");
+            res.json(500, {success: false, reason: "multiple_images_found_error"});
         }
         else {
             Topic.find({name: req.body.topic}, function(err, topics) {
                 if (topics.length == 0) {
-                    res.writeHead(200);
-                    res.end("Error: no topics found");
+                  res.json(500, {success: false, reason: "no_topics_found_error"});
                 }
                 else if (topics.length > 1) {
-                    res.writeHead(200);
-                    res.end("Error: multiple topics found");
+                    res.json(500, {success: false, reason: "multiple_topics_found_error"});
                 }
                 else {
                     var tag = new Tag({x: req.body.x, y: req.body.y, width: req.body.width, height: req.body.height, imageId: images[0]._id, topicId: topics[0]._id});
                     tag.save();
-                    res.writeHead(200);
-                    res.end("Success: tag created");
+                    res.json(200, {success: true});
                 }
             });
         }
     });
 };
 
-
 exports.getTags = function (req, res) {
     var id = req.params.imageID;
     Image.find({dataid: id}, function (err, images) {
         if (images.length == 0) {
-            res.writeHead(200);
-            res.end("error: no images found with dataid " + id);
+            res.json(500, {success: false, reason: "image_not_found_error", detail: id});
         }
         else if (images.length > 1) {
-            res.writeHead(200);
-            res.end("Error: multiple images found with dataid " + id);
+            res.json(500, {success: false, reason: "multiple_images_found_error", detail: id});
         }
         else {
             Tag.find({imageId: images[0]._id}, function(err, tags) {
@@ -242,11 +229,11 @@ exports.getTopics = function (req, res) {
 exports.newTopic = function (req, res) {
   Topic.find({name: req.params.topicName}, function (err, topic) {
     if (topic.length == 0) {
-      topic = new Topic({name:req.params.topicName, description: 'A description of this topic'});
+      topic = new Topic({name:req.params.topicName, description: req.query.description});
       topic.save();
-      res.json(200, {success: true});
+      res.json(200, {success: true, newtopic: topic.name});
     } else {
-      res.json(404, {success: false, reason: "duplicate_topic"});
+      res.json(400, {success: false, reason: "duplicate_topic"});
     }
   });
 }
