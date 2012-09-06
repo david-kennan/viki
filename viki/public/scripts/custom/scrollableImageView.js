@@ -97,15 +97,15 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
             var likeButton = registry.byId("likeButton");
             likeButton.set('disabled', false);
             var likeHandler = on(likeButton, "click", function() {
-                console.log("likeButton clicked");
+                debug.log("likeButton clicked");
                 domAttr.set("likeButton", "src", "/images/liked.png");
                 request("/image/like/" + image).then(
                     function(text) {
-                        console.log(text);
+                        debug.log(text);
                         likeButton.set('disabled', true);
                     },
                     function(error) {
-                        console.log(error);
+                        debug.log(error);
                     }
                 );
             });
@@ -135,7 +135,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                         height: (tagPos.h - mouseOutBuffer - dropDnSpace - 20) / imagePos.h,
                         topic: dropDown.value
                     }}).then(function(response) {
-                        console.log(response);
+                        debug.log(response);
                     });
                     domAttr.set("tagButton", "src", "/images/tag.png");
                     touchDnEvent.remove();
@@ -201,6 +201,23 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                         }
                     });
                     touchUpEvent = touch.release(tagDiv, touchRelease);
+                }
+            });
+            var imageDeleteHandler = on(registry.byId("deleteButton"), "click", function() {
+                if(confirm("Are you sure?")) {
+                  imageDeleteHandler.remove();
+                  debug.log("image deleted: "+image); 
+                  request("/image/delete/" + image).then(
+                    function(text) {
+                      domConstruct.destroy(image);
+                      debug.log(text);
+                    },
+                    function(error) {
+                      debug.log(error);
+                    }
+                  );
+                  // synthetic event since code has no separation from click event right now
+                  registry.byId('closeButton').emit('click');
                 }
             });
             var tagCancelHandler = on(registry.byId("cancelTag"), "click", function() {
