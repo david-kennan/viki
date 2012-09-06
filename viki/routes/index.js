@@ -237,3 +237,21 @@ exports.newTopic = function (req, res) {
     }
   });
 }
+
+exports.deleteImage = function (req, res) {
+  Image.find({dataid: req.params.imageID}, function (err, images) {
+    if (images.length == 0) {
+      res.json(500, {success: false, reason: "image_not_found_error"});
+    }
+    else if (images.length > 1) {
+      res.json(500, {success: false, reason: "multiple_images_found_error"});
+    }
+    else {
+      // delete image & thumbnail in gridfs
+      
+      // delete any tags
+      // delete the image record
+      res.json(200, {success: true});
+    }
+  });
+}
