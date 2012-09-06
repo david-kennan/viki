@@ -34,7 +34,7 @@ require(["dojox/mobile/parser", "dojo/dom", "dojo/query", "dijit/registry", "doj
         uploader = newUploader();
       }
 
-      // create stores and and a combox for entering topics - this can be called
+      // create stores and and a combobox for entering topics - this can be called
       // multiple times in order to refresh data
       var topicComboBox = function () {
         topicStore.query({}).map(function(topic) {
@@ -58,6 +58,7 @@ require(["dojox/mobile/parser", "dojo/dom", "dojo/query", "dijit/registry", "doj
             resetUploader();
             topicComboBox();
             registry.byId('fileuploader').set('disabled', false);
+            // go to previous view
             var f = function(){
               hash(_appState.hashes[0]);
             }
