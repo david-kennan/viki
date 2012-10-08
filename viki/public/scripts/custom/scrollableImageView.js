@@ -193,17 +193,25 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                             var mousePositionY = event.pageY - imagePos.y;
                             tagY = mousePositionY - mouseTagY;
                             
-                            if (tagX < tagBorder - mouseOutBuffer)
-                                domStyle.set(tagContainer, "left", (tagBorder - mouseOutBuffer) + "px");
-                            else if (tagX > imagePos.w - tagSize.w - mouseOutBuffer + tagBorder)
-                                domStyle.set(tagContainer, "left", (imagePos.w - tagSize.w - mouseOutBuffer + tagBorder) + "px");
+                            if (tagX < tagBorder - mouseOutBuffer) {
+                                tagX = (tagBorder - mouseOutBuffer);
+                                domStyle.set(tagContainer, "left", tagX + "px");
+                            }
+                            else if (tagX > imagePos.w - tagSize.w - mouseOutBuffer + tagBorder) {
+                                tagX = (imagePos.w - tagSize.w - mouseOutBuffer + tagBorder);
+                                domStyle.set(tagContainer, "left", tagX + "px");
+                            }
                             else
                                 domStyle.set(tagContainer, "left", tagX + "px");
                             
-                            if (tagY < -mouseOutBuffer)
-                                domStyle.set(tagContainer, "top", -mouseOutBuffer + "px");
-                            else if (tagY > imagePos.h - tagSize.h - mouseOutBuffer)
-                                domStyle.set(tagContainer, "top", (imagePos.h - tagSize.h - mouseOutBuffer) + "px");
+                            if (tagY < -mouseOutBuffer) {
+                                tagY = -mouseOutBuffer;
+                                domStyle.set(tagContainer, "top", tagY + "px");
+                            }
+                            else if (tagY > imagePos.h - tagSize.h - mouseOutBuffer) {
+                                tagY = (imagePos.h - tagSize.h - mouseOutBuffer);
+                                domStyle.set(tagContainer, "top", tagY + "px");
+                            }
                             else
                                 domStyle.set(tagContainer, "top", tagY + "px");
                             
@@ -236,7 +244,8 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
             
             var tagStartHandler = on(tagButton, "click", startTagging);
             
-            var imageDeleteHandler = on(registry.byId("deleteButton"), "click", function() {
+            var delButton = registry.byId("deleteButton");
+            function imgDeleteFunction () {
                 if(confirm("Are you sure?")) {
                   imageDeleteHandler.remove();
                   debug.log("image deleted: "+image); 
@@ -252,7 +261,12 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                   // synthetic event since code has no separation from click event right now
                   registry.byId('closeButton').emit('click');
                 }
-            });
+                else {
+                    on.once(delButton, "click", imgDeleteFunction);
+                }
+            }
+            
+            var imageDeleteHandler = on.once(delButton, "click", imgDeleteFunction);
             var tagCancelHandler = on(registry.byId("cancelTag"), "click", function() {
                 if (saveTagHandler) {
                     domAttr.set("tagButton", "src", "/images/tag.png");
@@ -265,6 +279,7 @@ define(["dojo/_base/declare", "dojo/store/JsonRest", "dojo/dom", "dojo/dom-geome
                 }
             });
             var closeHandler = on(closeButton, "click", function() {
+                imageDeleteHandler.remove();
                 domAttr.set("tagButton", "src", "/images/tag.png");
                 domAttr.set("likeButton", "src", "/images/like.png");
                 domStyle.set(cancelButton, "display", "none");
